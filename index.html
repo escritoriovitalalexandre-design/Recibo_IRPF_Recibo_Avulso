@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recibos — Escritório Contábil</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f3ef;--card:#fff;--ink:#1a1a2e;--ink2:#64748b;
+  --pri:#1B3A6B;--pri2:#2563EB;--acc:#e8a020;--acc2:#fef3c7;
+  --green:#166534;--green-bg:#dcfce7;
+  --red:#dc2626;--red-bg:#fee2e2;
+  --border:#e2e8f0;--radius:12px;
+  --shadow:0 2px 12px rgba(27,58,107,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--pri);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:1.4rem;color:#fff;line-height:1.25}
+.sidebar-logo p{font-size:.92rem;color:rgba(255,255,255,.55);margin-top:4px}
+.nav{flex:1;padding:10px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:11px;padding:15px 18px;cursor:pointer;color:rgba(255,255,255,.75);font-size:1.08rem;font-weight:600;transition:all .18s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.09);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.14);color:#fff;border-left-color:var(--acc)}
+.nav-item .ico{width:20px;text-align:center;font-size:1.05rem}
+.nav-sep{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:16px 18px 5px}
+
+/* MAIN */
+.main{margin-left:220px;padding:30px}
+.page-header{margin-bottom:26px}
+.page-header h2{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--pri)}
+.page-header p{font-size:1.08rem;color:var(--ink2);margin-top:5px}
+
+.section{display:none}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);padding:24px 26px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-title{font-size:1.22rem;font-weight:700;color:var(--pri);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card-title span{font-size:.95rem;font-weight:400;color:var(--ink2)}
+
+/* GRID DE CAMPOS */
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:14px}
+.fg.fg2{grid-template-columns:1fr 1fr}
+.fg.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg.fg4{grid-template-columns:1fr 1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.s2{grid-column:span 2}
+.field.s3{grid-column:span 3}
+.field label{font-size:.92rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2)}
+.field input,.field select,.field textarea{
+  border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
+  font-size:1.08rem;font-family:'DM Sans',sans-serif;color:var(--ink);
+  background:#fff;transition:border-color .15s,box-shadow .15s;outline:none;
+  text-transform:uppercase
+}
+.field input[type="email"],.field input[type="date"],.field input[type="month"],
+.field input[type="number"],.field select,.field textarea{text-transform:none}
+.field input[readonly]{text-transform:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--pri2);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.field textarea{resize:vertical;min-height:80px}
+
+.field-inline{display:flex;gap:8px;align-items:center}
+.field-inline input{flex:1}
+.field-inline .btn-gear{min-width:44px;height:44px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem}
+
+/* BOTÕES */
+.btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{border:none;border-radius:9px;padding:12px 22px;font-size:1.02rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-p{background:var(--pri);color:#fff}.btn-p:hover{background:var(--pri2)}
+.btn-s{background:var(--pri2);color:#fff}.btn-s:hover{opacity:.88}
+.btn-o{background:transparent;border:1.5px solid var(--border);color:var(--ink)}.btn-o:hover{border-color:var(--pri2);color:var(--pri2)}
+.btn-d{background:var(--red-bg);color:var(--red);border:none}.btn-d:hover{background:#fca5a5}
+.btn-g{background:var(--green-bg);color:var(--green)}.btn-g:hover{opacity:.85}
+.btn-acc{background:var(--acc);color:#fff}.btn-acc:hover{opacity:.88}
+.btn-sm{padding:9px 15px;font-size:.88rem}
+.btn-xs{padding:6px 11px;font-size:.8rem}
+
+/* TAGS / CHIPS */
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--acc2);color:var(--ink);border-radius:20px;padding:8px 15px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .15s}
+.chip:hover{background:#fde68a}
+.chip.green{background:var(--green-bg);color:var(--green)}
+.chip.blue{background:#dbeafe;color:var(--pri)}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+
+/* TABELA */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:1rem}
+th{background:var(--pri);color:#fff;padding:12px 14px;text-align:left;font-size:.9rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+th:first-child{border-radius:8px 0 0 0}
+th:last-child{border-radius:0 8px 0 0}
+td{padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:#f8fafc}
+.tbl-empty{text-align:center;color:var(--ink2);font-size:.95rem;padding:32px}
+
+/* BADGES */
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:.78rem;font-weight:700}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-orange{background:#ffedd5;color:#c2410c}
+.badge-gray{background:#f1f5f9;color:#475569}
+
+/* BUSCA/FILTRO */
+.filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.filter-bar input,.filter-bar select{
+  border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
+  font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;
+  transition:border-color .15s
+}
+.filter-bar select{text-transform:none}
+.filter-bar input{flex:1;min-width:200px}
+.filter-bar input:focus,.filter-bar select:focus{border-color:var(--pri2)}
+.filter-bar .lbl{font-size:.85rem;font-weight:600;color:var(--ink2);white-space:nowrap}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:30px;max-width:660px;width:95%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--pri);margin-bottom:22px}
+.modal-close{float:right;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--ink2);margin-top:-4px}
+
+/* ITENS DO RECIBO */
+.item-row{display:grid;grid-template-columns:1fr 70px 120px 36px;gap:9px;margin-bottom:8px;align-items:center}
+.item-row input{border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:1rem;outline:none;transition:border-color .15s;font-family:'DM Sans',sans-serif;text-transform:uppercase}
+.item-row input[type="number"]{text-transform:none}
+.item-row input:focus{border-color:var(--pri2)}
+.item-row .btn-rm{background:none;border:none;color:var(--red);font-size:1.25rem;cursor:pointer;padding:0;line-height:1}
+.item-row .btn-rm:hover{color:#991b1b}
+.total-bar{background:var(--pri);border-radius:10px;padding:14px 18px;color:#fff;font-size:1.18rem;font-weight:700;text-align:right;margin-top:12px}
+
+/* ============================
+   RECIBO DE IMPRESSÃO — 2 VIAS
+   Configurado para A4 com 2 vias exatamente em meia folha
+   ============================ */
+@media print{
+  html,body{
+    width:210mm!important;
+    height:297mm!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    background:#fff!important;
+  }
+  body *{visibility:hidden}
+  .print-area,
+  .print-area *{visibility:visible}
+  .print-area{
+    position:fixed;left:0;top:0;
+    width:210mm!important;
+    height:297mm!important;
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+    page-break-inside:avoid;
+    break-inside:avoid;
+  }
+  @page{
+    size:A4 portrait;
+    margin:0
+  }
+}
+.print-area{display:none}
+
+.recibo-folha{
+  width:210mm;
+  height:297mm;
+  min-height:297mm;
+  max-height:297mm;
+  box-sizing:border-box;
+  margin:0 auto;
+  position:relative;
+  overflow:hidden;
+  background:#fff;
+  display:grid;
+  grid-template-rows:148.5mm 148.5mm;
+}
+.recibo-folha::after{
+  content:'✂  —  CORTE AQUI  —  ✂';
+  position:absolute;
+  left:50%;
+  top:148.5mm;
+  transform:translate(-50%,-50%);
+  font-size:7pt;
+  color:#888;
+  letter-spacing:2px;
+  background:#fff;
+  padding:0 10px;
+  line-height:1;
+  z-index:5;
+  white-space:nowrap;
+}
+.recibo-folha::before{
+  content:'';
+  position:absolute;
+  left:0;
+  right:0;
+  top:148.5mm;
+  border-top:1px dashed #bbb;
+  z-index:4;
+}
+
+.via-bloco{
+  position:relative;
+  width:210mm;
+  box-sizing:border-box;
+  height:148.5mm;
+  min-height:148.5mm;
+  max-height:148.5mm;
+  padding:5mm 10mm 4mm 10mm;
+  display:grid;
+  grid-template-rows:1fr auto;
+  overflow:hidden;
+  background:#fff;
+}
+
+.picote{display:none!important}
+
+/* Cabeçalho do recibo */
+.rct-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5mm}
+.rct-escritorio h2{font-family:'DM Serif Display',serif;font-size:15pt;color:#1B3A6B;margin-bottom:2px}
+.rct-escritorio p{font-size:9.5pt;color:#555;line-height:1.45}
+.rct-numero{text-align:right}
+.rct-numero .num{font-family:'DM Serif Display',serif;font-size:21pt;color:#1B3A6B;line-height:1}
+.rct-numero .num-label{font-size:8.5pt;color:#888;text-transform:uppercase;letter-spacing:.06em}
+
+.rct-divider{border:none;border-top:2px solid #1B3A6B;margin-bottom:3mm}
+.rct-divider-thin{border:none;border-top:1px solid #e2e8f0;margin:2mm 0}
+
+.rct-title{font-size:12pt;font-weight:700;color:#1B3A6B;text-align:center;margin-bottom:2.5mm;letter-spacing:.04em;text-transform:uppercase}
+
+.rct-cli-box{background:#f0f4ff;border-left:4px solid #1B3A6B;padding:4px 10px;margin-bottom:3mm;border-radius:0 6px 6px 0}
+.rct-cli-box p{font-size:10pt;color:#333;line-height:1.5}
+.rct-cli-box strong{color:#1B3A6B;font-size:10.5pt}
+
+.rct-ref-row{display:flex;gap:6mm;margin-bottom:3mm}
+.rct-ref-item{flex:1}
+.rct-ref-item .rl{font-size:7.5pt;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:1px}
+.rct-ref-item .rv{font-size:10.5pt;font-weight:700;color:#1B3A6B;border-bottom:1px solid #c7d2fe;padding-bottom:1px}
+
+/* Tabela de itens */
+.rct-itens{width:100%;border-collapse:collapse;margin-bottom:2mm;font-size:10pt}
+.rct-itens thead tr{background:#1B3A6B}
+.rct-itens thead th{color:#fff;padding:4px 8px;text-align:left;font-size:8.5pt;letter-spacing:.04em;text-transform:uppercase}
+.rct-itens thead th:last-child{text-align:right}
+.rct-itens tbody tr:nth-child(even){background:#f8faff}
+.rct-itens tbody td{padding:4px 8px;color:#333;border-bottom:1px solid #eee}
+.rct-itens tbody td:last-child{text-align:right;font-weight:600;color:#1B3A6B}
+.rct-total-row{display:flex;justify-content:flex-end;gap:3mm;margin-bottom:3mm}
+.rct-total-box{background:none;border-top:2px solid #1B3A6B;padding:4px 0;text-align:right}
+.rct-total-box .tl{font-size:8pt;letter-spacing:.06em;text-transform:uppercase;color:#888;margin-bottom:1px}
+.rct-total-box .tv{font-size:15pt;font-weight:700;font-family:'DM Serif Display',serif;color:#000}
+
+.rct-pix-box{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:3px 9px;margin-bottom:2mm;display:flex;gap:8mm;align-items:center}
+.rct-pix-box p{font-size:9.5pt;color:#166534;line-height:1.5}
+.rct-pix-box strong{font-size:10pt}
+
+.rct-decl{font-size:9pt;color:#555;border-top:1px solid #e2e8f0;padding-top:1.5mm;margin-bottom:0;line-height:1.4;text-align:justify}
+
+.rct-ass-row{display:flex;justify-content:space-between;margin-top:auto;gap:4mm;padding-bottom:1mm}
+.rct-ass-col{flex:1;display:flex;flex-direction:column;align-items:center}
+.rct-ass-linha{width:100%;border-top:1.5px solid #555;margin-top:14mm;margin-bottom:2px}
+.rct-ass-nome{font-size:9pt;font-weight:700;color:#333;text-align:center;white-space:nowrap}
+.rct-ass-sub{font-size:7.5pt;color:#888;text-align:center}
+
+.via-label{font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:#1B3A6B;text-align:center;padding:2px 10px;border-radius:999px;width:fit-content;align-self:center;margin-top:2mm}
+
+/* Ajustes extras para o NOVO RECIBO comum caber com folga nas 2 vias */
+.via-recibo-comum{padding:4mm 9mm 3mm 9mm;position:relative}
+.via-recibo-comum .rct-corpo-ajustado{overflow:hidden;min-height:0;align-self:start}
+.via-recibo-comum .rct-rodape-fixo{position:relative;left:auto;right:auto;bottom:auto;background:#fff;align-self:end}
+.via-recibo-comum .rct-rodape-fixo{padding-top:1.2mm;border-top:0;z-index:2}
+.via-recibo-comum .rct-corpo-ajustado{display:block}
+.via-recibo-comum .rct-head{margin-bottom:1mm}
+.via-recibo-comum .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
+.via-recibo-comum .rct-escritorio p{font-size:8.2pt;line-height:1.22}
+.via-recibo-comum .rct-numero .num{font-size:18pt}
+.via-recibo-comum .rct-numero .num-label{font-size:7.8pt}
+.via-recibo-comum .rct-divider{margin-bottom:2mm}
+.via-recibo-comum .rct-title{font-size:10.8pt;margin-bottom:1.8mm}
+.via-recibo-comum .rct-cli-box{padding:3px 8px;margin-bottom:2mm}
+.via-recibo-comum .rct-cli-box p{font-size:8.8pt;line-height:1.24}
+.via-recibo-comum .rct-cli-box strong{font-size:9.2pt}
+.via-recibo-comum .rct-ref-row{gap:4mm;margin-bottom:1.8mm}
+.via-recibo-comum .rct-ref-item .rl{font-size:6.8pt}
+.via-recibo-comum .rct-ref-item .rv{font-size:8.8pt}
+.via-recibo-comum .rct-itens{margin-bottom:1mm;font-size:8.8pt}
+.via-recibo-comum .rct-itens thead th{padding:3px 6px;font-size:7.2pt}
+.via-recibo-comum .rct-itens tbody td{padding:3px 6px;font-size:8.6pt}
+.via-recibo-comum .rct-total-row{margin-bottom:1.2mm}
+.via-recibo-comum .rct-total-box{padding:2px 0}
+.via-recibo-comum .rct-total-box .tl{font-size:7pt}
+.via-recibo-comum .rct-total-box .tv{font-size:12.5pt}
+.via-recibo-comum .rct-pix-box{padding:2px 7px;margin-bottom:1.2mm;gap:5mm}
+.via-recibo-comum .rct-pix-box p{font-size:8.2pt;line-height:1.2}
+.via-recibo-comum .rct-pix-box strong{font-size:8.6pt}
+.via-recibo-comum .rct-decl{font-size:8pt;line-height:1.18;padding-top:1mm}
+.via-recibo-comum .rct-ass-row{padding-bottom:0;margin-top:0}
+.via-recibo-comum .rct-ass-linha{margin-top:10mm}
+.via-recibo-comum .rct-ass-nome{font-size:8.2pt}
+.via-recibo-comum .rct-ass-sub{font-size:6.8pt}
+.via-recibo-comum .via-label{font-size:6.6pt;margin-top:.8mm;padding:2px 8px}
+.via-recibo-comum .rct-obs-compacta{font-size:8.2pt!important;color:#555!important;margin-bottom:1.5mm!important;font-style:italic;line-height:1.15}
+
+
+
+/* ===== NOVO RECIBO - FOLHA 13 CM POR VIA (ROBUSTO PARA PDF) ===== */
+.recibo-folha-13cm{
+  width:210mm;
+  height:297mm;
+  position:relative;
+  margin:0 auto;
+  background:#fff;
+  overflow:hidden;
+}
+.recibo-folha-13cm::before{
+  content:'';
+  position:absolute;
+  left:8mm;
+  right:8mm;
+  top:145mm;
+  border-top:1px dashed #bbb;
+  z-index:2;
+}
+.recibo-folha-13cm::after{
+  content:'✂  —  CORTE AQUI  —  ✂';
+  position:absolute;
+  left:50%;
+  top:145mm;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  padding:0 8px;
+  font-size:7pt;
+  color:#777;
+  letter-spacing:2px;
+  z-index:3;
+  white-space:nowrap;
+}
+ .via-bloco-13cm{
+  position:absolute;
+  left:0;
+  width:210mm;
+  height:134.5mm;
+  box-sizing:border-box;
+  padding:5mm 9mm 2.5mm 9mm;
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.via-bloco-13cm.topo{ top:6.5mm; }
+.via-bloco-13cm.baixo{ top:150mm; }
+.via-bloco-13cm .rct-head{margin-bottom:1mm}
+.via-bloco-13cm .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
+.via-bloco-13cm .rct-escritorio p{font-size:8.2pt;line-height:1.22}
+.via-bloco-13cm .rct-numero .num{font-size:18pt}
+.via-bloco-13cm .rct-numero .num-label{font-size:7.8pt}
+.via-bloco-13cm .rct-divider{margin-bottom:2mm}
+.via-bloco-13cm .rct-title{font-size:10.8pt;margin-bottom:1.8mm}
+.via-bloco-13cm .rct-cli-box{padding:3px 8px;margin-bottom:1.8mm}
+.via-bloco-13cm .rct-cli-box p{font-size:8.8pt;line-height:1.22}
+.via-bloco-13cm .rct-cli-box strong{font-size:9.2pt}
+.via-bloco-13cm .rct-ref-row{gap:4mm;margin-bottom:1.4mm}
+.via-bloco-13cm .rct-ref-item .rl{font-size:6.8pt}
+.via-bloco-13cm .rct-ref-item .rv{font-size:8.8pt}
+.via-bloco-13cm .rct-itens{margin-bottom:1mm;font-size:8.7pt}
+.via-bloco-13cm .rct-itens thead th{padding:3px 6px;font-size:7.1pt}
+.via-bloco-13cm .rct-itens tbody td{padding:3px 6px;font-size:8.5pt}
+.via-bloco-13cm .rct-total-row{margin-bottom:1mm}
+.via-bloco-13cm .rct-total-box{padding:2px 0}
+.via-bloco-13cm .rct-total-box .tl{font-size:7pt}
+.via-bloco-13cm .rct-total-box .tv{font-size:12pt}
+.via-bloco-13cm .rct-pix-box{padding:2px 7px;margin-bottom:.6mm;gap:5mm}
+.via-bloco-13cm .rct-pix-box p{font-size:7.8pt;line-height:1.08}
+.via-bloco-13cm .rct-pix-box strong{font-size:8.2pt}
+.via-bloco-13cm .rct-decl{font-size:8.5pt;line-height:1.12;padding-top:.6mm;margin-bottom:0}
+.via-bloco-13cm .rct-ass-row{margin-top:9mm;gap:3mm;padding-bottom:0}
+.via-bloco-13cm .rct-ass-linha{margin-top:12mm}
+.via-bloco-13cm .rct-ass-nome{font-size:7.8pt}
+.via-bloco-13cm .rct-ass-sub{font-size:6.2pt}
+.via-bloco-13cm .via-label{font-size:5.7pt;margin-top:0;padding:1px 5px}
+.via-bloco-13cm .rct-obs-compacta{font-size:7.8pt!important;color:#555!important;margin-bottom:.8mm!important;font-style:italic;line-height:1.05}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.stat-card .sv{font-family:'DM Serif Display',serif;font-size:1.85rem;color:var(--pri);font-weight:400}
+.stat-card .sl{font-size:.84rem;color:var(--ink2);margin-top:3px;font-weight:500}
+
+/* RECIBO FORM - ITENS */
+.itens-header{display:grid;grid-template-columns:1fr 70px 120px 36px;gap:9px;padding:0 2px;margin-bottom:5px}
+.itens-header span{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2)}
+
+/* HISTORICO */
+.hist-card{border:1.5px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:12px;transition:border-color .15s}
+.hist-card:hover{border-color:var(--pri2)}
+.hist-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.hist-num{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--pri)}
+.hist-val{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--green)}
+.hist-cli{font-size:.97rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.hist-ref{font-size:.86rem;color:var(--ink2)}
+.hist-actions{display:flex;gap:7px;margin-top:10px}
+
+/* AVISO */
+.aviso{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;font-size:1rem;color:#92400e;margin-bottom:14px}
+
+/* IRPF ESPECÍFICO */
+.rct-irpf-box{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:6px 12px;margin-bottom:4mm;text-align:center}
+.rct-irpf-box p{font-size:9pt;color:#92400e;font-weight:600}
+.rct-irpf-box span{font-size:8pt;color:#b45309;font-weight:400}
+
+/* ANIMAÇÕES */
+.fade-in{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* TELA DE SETUP */
+#tela-setup{
+  display:none;position:fixed;inset:0;background:var(--bg);
+  z-index:9999;align-items:center;justify-content:center
+}
+#tela-setup.ativo{display:flex}
+.setup-box{
+  background:#fff;border-radius:18px;padding:38px 40px;max-width:520px;width:95%;
+  box-shadow:0 20px 60px rgba(27,58,107,.14)
+}
+.setup-logo{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--pri);margin-bottom:4px}
+.setup-sub{font-size:.97rem;color:var(--ink2);margin-bottom:24px;line-height:1.5}
+.setup-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.setup-num{
+  min-width:26px;height:26px;background:var(--pri);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:700;flex-shrink:0;margin-top:1px
+}
+.setup-step-text{font-size:.95rem;color:var(--ink);line-height:1.45}
+.setup-step-text code{background:#f1f5f9;padding:1px 6px;border-radius:4px;font-size:.88rem}
+.setup-step-text a{color:var(--pri2)}
+.setup-inputs{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.setup-field label{display:block;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);margin-bottom:5px}
+.setup-field input{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;
+  font-size:1rem;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;
+  text-transform:none;transition:border-color .15s
+}
+.setup-field input:focus{border-color:var(--pri2);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.setup-btn{
+  margin-top:6px;width:100%;background:var(--pri);color:#fff;border:none;
+  border-radius:9px;padding:13px;font-size:1.05rem;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s
+}
+.setup-btn:hover{background:var(--pri2)}
+.setup-msg{font-size:.9rem;margin-top:8px;min-height:20px;color:var(--red)}
+.setup-msg.ok{color:var(--green)}
+
+/* Separador de seção */
+.sec-sep{height:1px;background:var(--border);margin:8px 0 16px}
+
+/* STATUS SUPABASE */
+.supabase-status{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:12px 18px 8px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:.9rem;
+  font-weight:600;
+}
+.supabase-status small{
+  display:block;
+  color:rgba(255,255,255,.65);
+  font-size:.76rem;
+  font-weight:500;
+  margin-top:2px;
+}
+.status-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  display:inline-block;
+  flex:0 0 12px;
+  box-shadow:0 0 0 2px rgba(255,255,255,.15);
+}
+.status-loading{
+  background:#f59e0b;
+  animation:pulseStatus 1.2s infinite;
+}
+.status-ok{
+  background:#22c55e;
+}
+.status-error{
+  background:#ef4444;
+}
+@keyframes pulseStatus{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:.55;transform:scale(1.12)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+</style>
+</head>
+<body>
+
+<!-- TELA DE SETUP -->
+<div id="tela-setup">
+  <div class="setup-box">
+    <div class="setup-logo">⚙️ Configurar banco de dados</div>
+    <div class="setup-sub">Para usar o sistema online, informe as credenciais do seu projeto Supabase. Isso é feito <strong>uma única vez por computador</strong>.</div>
+    <div class="setup-step">
+      <div class="setup-num">1</div>
+      <div class="setup-step-text">Acesse <a href="https://supabase.com" target="_blank">supabase.com</a> e faça login no seu projeto.</div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">2</div>
+      <div class="setup-step-text">Vá em <code>Settings → API</code>. Copie a <strong>Project URL</strong> e a chave <strong>anon/public</strong>.</div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-num">3</div>
+      <div class="setup-step-text">Se ainda não criou as tabelas, rode o arquivo <code>criar_tabelas.sql</code> no <strong>SQL Editor</strong> do Supabase.</div>
+    </div>
+    <div class="setup-inputs">
+      <div class="setup-field">
+        <label>Project URL</label>
+        <input type="text" id="setup-url" placeholder="https://xxxxxxxxxxxx.supabase.co">
+      </div>
+      <div class="setup-field">
+        <label>Anon Key (chave pública)</label>
+        <input type="text" id="setup-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      </div>
+      <button class="setup-btn" onclick="salvarSetup()">✅ Salvar e continuar</button>
+      <div class="setup-msg" id="setup-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1 id="sb-nome">Escritório Contábil</h1>
+    <p id="sb-crc">CRC/SP — 000000</p>
+  </div>
+  <div class="supabase-status" id="supabase-status" title="Verificando conexão com Supabase...">
+    <span class="status-dot status-loading" id="supabase-status-dot"></span>
+    <div>
+      <div id="supabase-status-text">Supabase: verificando...</div>
+      <small id="supabase-status-subtext">Aguardando resposta do servidor</small>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="nav-sep">Recibos</div>
+    <div class="nav-item active" data-sec="recibo" onclick="nav(this)"><span class="ico">📄</span> Novo Recibo</div>
+    <div class="nav-item" data-sec="irpf" onclick="nav(this)"><span class="ico">🧾</span> Recibo IRPF</div>
+    <div class="nav-item" data-sec="historico" onclick="nav(this)"><span class="ico">📋</span> Histórico</div>
+
+    <div class="nav-sep">Cadastros</div>
+    <div class="nav-item" data-sec="clientes" onclick="nav(this)"><span class="ico">👥</span> Clientes</div>
+    <div class="nav-item" data-sec="itens" onclick="nav(this)"><span class="ico">📦</span> Itens / Serviços</div>
+
+    <div class="nav-sep">Sistema</div>
+    <div class="nav-item" data-sec="config" onclick="nav(this)"><span class="ico">⚙️</span> Configurações</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ===== NOVO RECIBO ===== -->
+<div id="sec-recibo" class="section active">
+  <div class="page-header">
+    <h2>Novo Recibo</h2>
+    <p>Preencha os dados e emita o recibo com 2 vias para impressão</p>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 Dados do Recibo</div>
+    <div class="fg fg3">
+      <div class="field">
+        <label>Número</label>
+        <input type="text" id="r-num" placeholder="Auto" readonly style="background:#f8fafc">
+      </div>
+      <div class="field">
+        <label>Referência (mês/ano)</label>
+        <input type="month" id="r-ref">
+      </div>
+      <div class="field">
+        <label>Vencimento</label>
+        <input type="date" id="r-venc">
+      </div>
+    </div>
+
+    <div class="aviso" style="background:#eff6ff;border-color:#93c5fd;color:#1e40af">💡 Você pode emitir com cliente cadastrado ou fazer um recibo avulso preenchendo os dados manualmente.</div>
+
+    <div class="fg fg2">
+      <div class="field">
+        <label>Cliente cadastrado</label>
+        <select id="r-cliente" onchange="carregarItensCli()">
+          <option value="">Cliente avulso / preenchimento manual</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Tipo de Regime</label>
+        <select id="r-regime">
+          <option value="">—</option>
+          <option>Simples Nacional — MEI</option>
+          <option>Simples Nacional — ME</option>
+          <option>Simples Nacional — EPP</option>
+          <option>Lucro Presumido</option>
+          <option>Lucro Real</option>
+          <option>Pessoa Física</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fg fg3">
+      <div class="field s2">
+        <label>Nome do cliente / tomador</label>
+        <input type="text" id="r-cli-nome" placeholder="Ex: João da Silva">
+      </div>
+      <div class="field">
+        <label>CPF / CNPJ</label>
+        <input type="text" id="r-cli-doc" placeholder="000.000.000-00 ou 00.000.000/0001-00" oninput="mascaraDoc(this)">
+      </div>
+      <div class="field s3">
+        <label>Endereço</label>
+        <input type="text" id="r-cli-end" placeholder="Rua, número, bairro, cidade/UF">
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:12px">
+      <label>Observação</label>
+      <input type="text" id="r-obs" placeholder="Ex: Referente a serviços contábeis — competência 04/2026">
+    </div>
+
+    <!-- Itens catalogados -->
+    <div class="card-title" style="font-size:.82rem;margin-bottom:8px">Atalhos rápidos <span>(clique para adicionar)</span></div>
+    <div id="chips-itens" class="chips-wrap"></div>
+
+    <div class="itens-header">
+      <span>Descrição</span><span>Qtd</span><span>Valor R$</span><span></span>
+    </div>
+    <div id="r-itens-lista"></div>
+    <button class="btn btn-o btn-sm" id="btn-add-item-recibo" onclick="addItemRecibo()">+ Adicionar item</button>
+    <div class="total-bar" id="r-total-bar">Total: R$ 0,00</div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-o" onclick="preVisualizarRecibo()">👁️ Pré-visualizar</button>
+    <button class="btn btn-s" onclick="imprimirRecibo()">🖨️ Imprimir / PDF (2 vias)</button>
+    <button class="btn btn-o" onclick="limparRecibo()">↺ Limpar</button>
+  </div>
+</div>
+
+<!-- ===== RECIBO IRPF ===== -->
+<div id="sec-irpf" class="section">
+  <div class="page-header">
+    <h2>Recibo IRPF</h2>
+    <p>Recibos para clientes cadastrados, com numeração própria e opção de salvar no histórico</p>
+  </div>
+  <div class="aviso">⚠️ Esta aba é exclusiva para clientes cadastrados. O recibo pode ser salvo no histórico e impresso quando necessário.</div>
+  <div class="card">
+    <div class="card-title">🧾 Dados do Recibo IRPF</div>
+
+    <div class="fg fg3">
+      <div class="field">
+        <label>Número</label>
+        <input type="text" id="ir-num" placeholder="Auto" readonly style="background:#f8fafc">
+      </div>
+      <div class="field">
+        <label>Data do Recibo</label>
+        <input type="date" id="ir-data">
+      </div>
+      <div class="field">
+        <label>Cidade</label>
+        <input type="text" id="ir-cidade" placeholder="Ex: Itirapina/SP">
+      </div>
+    </div>
+
+    <div class="fg fg2">
+      <div class="field">
+        <label>Cliente cadastrado</label>
+        <select id="ir-cliente" onchange="preencherDadosIR()">
+          <option value="">Selecione o cliente...</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Descrição do Serviço</label>
+        <div class="field-inline">
+          <input type="text" id="ir-tipo" list="ir-tipo-sugestoes" placeholder="Digite ou selecione a descrição do serviço">
+          <button type="button" class="btn btn-o btn-gear" onclick="abrirCadastroServicos()" title="Abrir cadastro de serviços">⚙️</button>
+        </div>
+        <datalist id="ir-tipo-sugestoes">
+          <option value="Honorários contábeis"></option>
+          <option value="Serviços de assessoria fiscal"></option>
+          <option value="Serviços contábeis e fiscais"></option>
+          <option value="Elaboração e entrega da declaração de IRPF"></option>
+          <option value="Assessoria contábil e fiscal"></option>
+          <option value="Consultoria tributária"></option>
+          <option value="Outros serviços contábeis"></option>
+        </datalist>
+      </div>
+    </div>
+
+    <div class="fg fg3">
+      <div class="field s2"><label>Nome do cliente / tomador</label><input type="text" id="ir-nome" placeholder="Nome completo do cliente" readonly style="background:#f8fafc"></div>
+      <div class="field"><label>CPF / CNPJ</label><input type="text" id="ir-cpf" placeholder="000.000.000-00" readonly style="background:#f8fafc"></div>
+      <div class="field s3"><label>Endereço</label><input type="text" id="ir-end" placeholder="Rua, número, bairro, cidade/UF" readonly style="background:#f8fafc"></div>
+    </div>
+
+    <div class="fg fg2" style="margin-top:8px">
+      <div class="field">
+        <label>Valor do Recibo (R$)</label>
+        <input type="text" id="ir-valor" placeholder="0,00" oninput="formatarMoeda(this)">
+      </div>
+      <div class="field">
+        <label>Observação</label>
+        <input type="text" id="ir-obs" placeholder="Ex: Atendimento de IRPF, consultoria ou outro serviço prestado">
+      </div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-g" onclick="salvarReciboIRPF()">💾 Gravar recibo</button>
+    <button class="btn btn-s" onclick="gravarEImprimirIRPF()">🧾 Gravar e imprimir</button>
+    <button class="btn btn-o" onclick="limparIRPF()">🗑️ Limpar</button>
+  </div>
+</div>
+
+<!-- ===== HISTÓRICO ===== -->
+<div id="sec-historico" class="section">
+  <div class="page-header">
+    <h2>Histórico de Recibos</h2>
+    <p>Consulte, reimprima ou replique recibos por período</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="hist-stats"></div>
+
+  <!-- Filtros -->
+  <div class="card">
+    <div class="card-title">🔍 Filtros e Busca</div>
+    <div class="filter-bar">
+      <input type="text" id="h-busca" placeholder="🔍 Buscar por cliente, número ou descrição..." oninput="renderHistorico()">
+      <select id="h-cli" onchange="renderHistorico()" style="min-width:170px">
+        <option value="">Todos os clientes</option>
+      </select>
+      <select id="h-mes" onchange="renderHistorico()" style="min-width:150px">
+        <option value="">Todos os meses</option>
+      </select>
+      <select id="h-ano" onchange="renderHistorico()" style="min-width:120px">
+        <option value="">Todos os anos</option>
+      </select>
+      <select id="h-status" onchange="renderHistorico()" style="min-width:130px">
+        <option value="">Todos</option>
+        <option value="pago">Pago</option>
+        <option value="pendente">Pendente</option>
+      </select>
+    </div>
+    <div id="h-total-filtro" style="font-size:.8rem;color:var(--ink2);margin-bottom:12px"></div>
+    <div id="hist-lista"></div>
+  </div>
+
+  <!-- Replicar em lote -->
+  <div class="card">
+    <div class="card-title">📤 Replicar Recibos em Lote</div>
+    <p style="font-size:.83rem;color:var(--ink2);margin-bottom:14px">Copia todos os recibos de uma referência para outra, ajustando os dados automaticamente.</p>
+    <div class="fg fg3">
+      <div class="field">
+        <label>Referência de origem</label>
+        <input type="month" id="rep-origem">
+      </div>
+      <div class="field">
+        <label>Referência de destino</label>
+        <input type="month" id="rep-destino">
+      </div>
+      <div class="field" style="justify-content:flex-end">
+        <label>&nbsp;</label>
+        <button class="btn btn-s" onclick="replicarRecibos()">📤 Replicar todos</button>
+      </div>
+    </div>
+    <div id="rep-preview" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ===== CLIENTES ===== -->
+<div id="sec-clientes" class="section">
+  <div class="page-header">
+    <h2>Cadastro de Clientes</h2>
+    <p>Gerencie os dados e os itens padrão de cobrança de cada cliente</p>
+  </div>
+  <div class="card" id="form-cliente-card">
+    <div class="card-title" id="form-cli-title">➕ Novo Cliente</div>
+    <div class="fg fg3">
+      <div class="field s2"><label>Razão Social / Nome</label><input type="text" id="c-nome" placeholder="Ex: João Silva ME"></div>
+      <div class="field"><label>CPF / CNPJ</label><input type="text" id="c-doc" placeholder="000.000.000-00" oninput="mascaraDoc(this)"></div>
+    </div>
+    <div class="fg fg3">
+      <div class="field">
+        <label>Tipo</label>
+        <select id="c-tipo">
+          <option>MEI</option>
+          <option>ME — Simples Nacional</option>
+          <option>EPP — Simples Nacional</option>
+          <option>Lucro Presumido</option>
+          <option>Pessoa Física</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="field"><label>E-mail</label><input type="email" id="c-email" placeholder="email@exemplo.com" style="text-transform:none"></div>
+      <div class="field"><label>Telefone / WhatsApp</label><input type="text" id="c-tel" placeholder="(00) 00000-0000" oninput="mascaraTel(this)"></div>
+    </div>
+    <div class="fg fg4">
+      <div class="field s2"><label>Endereço</label><input type="text" id="c-end" placeholder="Rua / Avenida / Logradouro"></div>
+      <div class="field"><label>Número</label><input type="text" id="c-num" placeholder="Ex: 123"></div>
+      <div class="field"><label>CEP</label><input type="text" id="c-cep" placeholder="00000-000" oninput="mascaraCEP(this)" onblur="buscarCEP()"></div>
+    </div>
+    <div class="fg fg4">
+      <div class="field"><label>Bairro</label><input type="text" id="c-bairro" placeholder="Bairro"></div>
+      <div class="field s2"><label>Cidade</label><input type="text" id="c-cidade" placeholder="Cidade"></div>
+      <div class="field"><label>UF</label><input type="text" id="c-uf" placeholder="UF" maxlength="2" style="text-transform:uppercase"></div>
+    </div>
+
+    <!-- Dia de vencimento -->
+    <div class="fg fg3">
+      <div class="field">
+        <label>Dia de Vencimento</label>
+        <select id="c-venc">
+          <option value="">Sem padrão</option>
+          <option>5</option><option>10</option><option>15</option>
+          <option>20</option><option>25</option><option>30</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Conta bancária preferencial</label>
+        <input type="text" id="c-banco" placeholder="Ex: Inter, Itaú...">
+      </div>
+      <div class="field">
+        <label>Observação interna</label>
+        <input type="text" id="c-obsint" placeholder="Nota interna sobre o cliente">
+      </div>
+    </div>
+
+    <!-- Itens padrão -->
+    <div class="sec-sep"></div>
+    <div class="card-title" style="font-size:.85rem;margin-bottom:8px">📦 Itens Padrão de Cobrança <span style="font-size:.72rem">(carregam automaticamente no recibo)</span></div>
+    <div id="chips-cli" class="chips-wrap"></div>
+    <div class="itens-header">
+      <span>Descrição</span><span>Qtd</span><span>Valor R$</span><span></span>
+    </div>
+    <div id="c-itens-lista"></div>
+    <button class="btn btn-o btn-sm" onclick="addItensCli()">+ Adicionar item</button>
+
+    <div class="btn-row">
+      <button class="btn btn-p" onclick="salvarCliente()">💾 Salvar</button>
+      <button class="btn btn-o" onclick="cancelarCli()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Filtro clientes -->
+  <div class="card">
+    <div class="card-title">👥 Clientes Cadastrados</div>
+    <div class="filter-bar">
+      <input type="text" id="cli-busca" placeholder="🔍 Buscar por nome, CPF/CNPJ ou tipo..." oninput="renderClientes()">
+      <select id="cli-tipo-f" onchange="renderClientes()" style="min-width:170px">
+        <option value="">Todos os tipos</option>
+        <option>MEI</option>
+        <option>ME — Simples Nacional</option>
+        <option>EPP — Simples Nacional</option>
+        <option>Lucro Presumido</option>
+        <option>Pessoa Física</option>
+      </select>
+    </div>
+    <div id="cli-lista"></div>
+  </div>
+</div>
+
+<!-- ===== ITENS / SERVIÇOS ===== -->
+<div id="sec-itens" class="section">
+  <div class="page-header">
+    <h2>Itens e Serviços</h2>
+    <p>Catálogo de serviços — aparecem como atalhos na tela de recibo e no cadastro de clientes</p>
+  </div>
+  <div class="card">
+    <div class="card-title">➕ Novo Item</div>
+    <div class="fg fg3">
+      <div class="field s2"><label>Descrição do serviço</label><input type="text" id="ic-desc" placeholder="Ex: Honorários contábeis mensais"></div>
+      <div class="field"><label>Valor padrão (R$)</label><input type="text" id="ic-val" placeholder="0,00" oninput="formatarMoeda(this)"></div>
+    </div>
+    <div class="btn-row"><button class="btn btn-p" onclick="salvarItemCat()">💾 Salvar Item</button></div>
+  </div>
+
+  <!-- Filtro itens -->
+  <div class="card">
+    <div class="card-title">📦 Itens Cadastrados</div>
+    <div class="filter-bar">
+      <input type="text" id="itens-busca" placeholder="🔍 Buscar item..." oninput="renderItensCat()">
+    </div>
+    <div id="itens-cat-lista"></div>
+  </div>
+</div>
+
+<!-- ===== CONFIG ===== -->
+<div id="sec-config" class="section">
+  <div class="page-header">
+    <h2>Configurações</h2>
+    <p>Dados do escritório, contador e formas de pagamento</p>
+  </div>
+  <div class="card">
+    <div class="card-title">🏢 Identificação</div>
+    <div class="fg fg3">
+      <div class="field s2"><label>Nome do escritório</label><input type="text" id="cfg-nome" placeholder="Ex: Silva Contabilidade ME"></div>
+      <div class="field"><label>CNPJ</label><input type="text" id="cfg-cnpj" placeholder="00.000.000/0001-00"></div>
+      <div class="field"><label>CRC</label><input type="text" id="cfg-crc" placeholder="CRC/SP-000000/O-5"></div>
+      <div class="field s2"><label>Endereço completo</label><input type="text" id="cfg-end" placeholder="Rua, número — Cidade/UF — CEP"></div>
+      <div class="field"><label>Telefone</label><input type="text" id="cfg-tel" placeholder="(00) 00000-0000"></div>
+      <div class="field"><label>E-mail</label><input type="email" id="cfg-email" placeholder="contato@escritorio.com.br" style="text-transform:none"></div>
+      <div class="field s2"><label>Nome do contador (assinatura)</label><input type="text" id="cfg-cont" placeholder="Ex: Alexandre da Silva"></div>
+      <div class="field"><label>CPF do contador</label><input type="text" id="cfg-cpf-cont" placeholder="000.000.000-00"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">💳 Pagamento</div>
+    <div class="fg fg3">
+      <div class="field"><label>Chave Pix</label><input type="text" id="cfg-pix" placeholder="Ex: 00.000.000/0001-00"></div>
+      <div class="field">
+        <label>Tipo da chave</label>
+        <select id="cfg-pix-t"><option>CNPJ</option><option>CPF</option><option>E-mail</option><option>Telefone</option><option>Chave aleatória</option></select>
+      </div>
+      <div class="field"><label>Banco</label><input type="text" id="cfg-banco" placeholder="Ex: Banco Inter"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📄 Rodapé do recibo</div>
+    <div class="field"><label>Texto de declaração (rodapé)</label>
+      <textarea id="cfg-decl" rows="3" placeholder="Ex: Declaro ter recebido a importância acima discriminada, referente a serviços prestados, ficando quitado o presente recibo."></textarea>
+    </div>
+    <div class="field" style="margin-top:8px"><label>Cidade (para data)</label><input type="text" id="cfg-cidade" placeholder="Ex: Itirapina/SP"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-p" onclick="salvarConfig()">💾 Salvar configurações</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL EDITAR RECIBO -->
+<div class="overlay" id="modal-recibo">
+  <div class="modal">
+    <button class="modal-close" onclick="fecharModal('modal-recibo')">✕</button>
+    <div class="modal-title">Editar Recibo</div>
+    <div id="modal-recibo-body"></div>
+    <div class="btn-row">
+      <button class="btn btn-p" onclick="salvarEdicaoRecibo()">💾 Salvar alterações</button>
+      <button class="btn btn-o" onclick="fecharModal('modal-recibo')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÁREA DE IMPRESSÃO — 2 VIAS -->
+<div class="print-area" id="print-recibo"></div>
+
+<script>
+// ========= STORAGE =========
+const S = {
+  g: k => { try { return JSON.parse(localStorage.getItem(k)) || [] } catch { return [] } },
+  s: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+  cfg: () => { try { return JSON.parse(localStorage.getItem('cfg')) || {} } catch { return {} } },
+  saveCfg: v => localStorage.setItem('cfg', JSON.stringify(v))
+}
+
+// ========= NAVIGATION =========
+function nav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  el.classList.add('active')
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.getElementById('sec-' + el.dataset.sec).classList.add('active')
+  // atualizar listas
+  if (el.dataset.sec === 'historico') { renderHistorico(); atualizarStats() }
+  if (el.dataset.sec === 'clientes') renderClientes()
+  if (el.dataset.sec === 'itens') renderItensCat()
+  if (el.dataset.sec === 'recibo') { popularSelects(); renderChipsItens() }
+  if (el.dataset.sec === 'irpf') { popularSelectsIR(); preIRData(); renderSugestoesIRPF() }
+  if (el.dataset.sec === 'config') carregarConfig()
+}
+
+// ========= INIT =========
+window.onload = () => {
+  const cfg = S.cfg()
+  if (cfg.nome) document.getElementById('sb-nome').textContent = cfg.nome
+  if (cfg.crc) document.getElementById('sb-crc').textContent = cfg.crc
+
+  popularSelects()
+  renderChipsItens()
+  renderSugestoesIRPF()
+
+  // Data padrão
+  const hoje = new Date()
+  const refMes = hoje.toISOString().slice(0,7)
+  document.getElementById('r-ref').value = ''
+  document.getElementById('r-venc').value = ''
+  document.getElementById('r-num').value = proximoNumero()
+
+  // IRPF data
+  document.getElementById('ir-data').value = hoje.toISOString().slice(0,10)
+  document.getElementById('ir-num').value = proximoNumeroIRPF()
+  document.getElementById('ir-cidade').value = S.cfg().cidade || ''
+
+  addItemRecibo()
+  atualizarBotaoItensRecibo()
+}
+
+// ========= NUMERAÇÃO =========
+function proximoNumero() {
+  const recs = S.g('recibos')
+  if (!recs.length) return '001/' + new Date().getFullYear()
+  const nums = recs.map(r => parseInt((r.num||'0').split('/')[0])).filter(n => !isNaN(n))
+  const max = Math.max(0, ...nums)
+  return String(max + 1).padStart(3,'0') + '/' + new Date().getFullYear()
+}
+
+function proximoNumeroIRPF() {
+  const recs = S.g('recibos_ir')
+  const ano = new Date().getFullYear()
+  const nums = recs.filter(r => (r.num||'').endsWith('/'+ano)).map(r => parseInt((r.num||'').replace('IRPF-','').split('/')[0])).filter(n => !isNaN(n))
+  const prox = Math.max(0, ...nums) + 1
+  return 'IRPF-' + String(prox).padStart(3,'0') + '/' + ano
+}
+
+// ========= SELECTS =========
+function popularSelects() {
+  const clientes = S.g('clientes')
+  ;['r-cliente','h-cli'].forEach(id => {
+    const sel = document.getElementById(id)
+    if (!sel) return
+    const val = sel.value
+    while (sel.options.length > 1) sel.remove(1)
+    clientes.forEach(c => {
+      const opt = document.createElement('option')
+      opt.value = c.id
+      opt.textContent = c.nome
+      sel.appendChild(opt)
+    })
+    if (val) sel.value = val
+  })
+
+  // Filtro histórico meses/anos
+  const meses = [...new Set(S.g('recibos').map(r => r.ref?.slice(0,7) || ''))].filter(Boolean).sort().reverse()
+  const selMes = document.getElementById('h-mes')
+  const selAno = document.getElementById('h-ano')
+  if (selMes && selAno) {
+    while (selMes.options.length > 1) selMes.remove(1)
+    while (selAno.options.length > 1) selAno.remove(1)
+    const anos = [...new Set(meses.map(m => m.slice(0,4)))]
+    meses.forEach(m => {
+      const opt = document.createElement('option'); opt.value = m; opt.textContent = fmtMesRef(m); selMes.appendChild(opt)
+    })
+    anos.forEach(a => {
+      const opt = document.createElement('option'); opt.value = a; opt.textContent = a; selAno.appendChild(opt)
+    })
+  }
+}
+
+function popularSelectsIR() {
+  const clientes = S.g('clientes')
+  const sel = document.getElementById('ir-cliente')
+  sel.options[0].text = 'Selecione o cliente...'; sel.options[0].value = ''
+  while (sel.options.length > 1) sel.remove(1)
+  clientes.forEach(c => {
+    const opt = document.createElement('option')
+    opt.value = c.id
+    opt.textContent = c.nome
+    sel.appendChild(opt)
+  })
+}
+
+function fmtMesRef(ref) {
+  if (!ref) return ''
+  const [a, m] = ref.split('-')
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
+  return nomes[parseInt(m)-1] + '/' + a
+}
+
+// ========= RECIBO — ITENS =========
+let _edicaoId = null
+const MAX_ITENS_RECIBO = 2
+
+function atualizarBotaoItensRecibo() {
+  const btn = document.getElementById('btn-add-item-recibo')
+  const total = document.querySelectorAll('#r-itens-lista .item-row').length
+  if (!btn) return
+  btn.disabled = total >= MAX_ITENS_RECIBO
+  btn.style.opacity = total >= MAX_ITENS_RECIBO ? '.6' : '1'
+  btn.style.cursor = total >= MAX_ITENS_RECIBO ? 'not-allowed' : 'pointer'
+  btn.textContent = total >= MAX_ITENS_RECIBO ? 'Limite de 3 itens' : '+ Adicionar item'
+}
+
+function addItemRecibo(desc='', qtd=1, val='') {
+  const atual = document.querySelectorAll('#r-itens-lista .item-row').length
+  if (atual >= MAX_ITENS_RECIBO) { atualizarBotaoItensRecibo(); return }
+  const lista = document.getElementById('r-itens-lista')
+  const div = document.createElement('div')
+  div.className = 'item-row'
+  div.innerHTML = `
+    <input type="text" placeholder="Descrição do serviço" value="${desc}" oninput="calcTotal()">
+    <input type="number" value="${qtd}" min="1" step="1" oninput="calcTotal()">
+    <input type="text" placeholder="0,00" value="${val}" oninput="formatarMoeda(this);calcTotal()">
+    <button class="btn-rm" onclick="this.parentElement.remove();calcTotal();atualizarBotaoItensRecibo()">✕</button>
+  `
+  lista.appendChild(div)
+  calcTotal()
+  atualizarBotaoItensRecibo()
+}
+
+function calcTotal() {
+  let total = 0
+  document.querySelectorAll('#r-itens-lista .item-row').forEach(row => {
+    const qtd = parseFloat(row.querySelectorAll('input')[1].value) || 0
+    const val = parseMoeda(row.querySelectorAll('input')[2].value)
+    total += qtd * val
+  })
+  document.getElementById('r-total-bar').textContent = 'Total: ' + fmtMoeda(total)
+  atualizarBotaoItensRecibo()
+  return total
+}
+
+function parseMoeda(v) {
+  if (!v) return 0
+  return parseFloat(v.replace(/\./g,'').replace(',','.')) || 0
+}
+
+function fmtMoeda(v) {
+  return v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})
+}
+
+function formatarMoeda(el) {
+  let v = el.value.replace(/\D/g,'')
+  if (!v) { el.value = ''; return }
+  v = parseInt(v) / 100
+  el.value = v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})
+}
+
+// ========= CHIPS de itens =========
+function renderChipsItens() {
+  const itens = S.g('itens')
+  const wrap = document.getElementById('chips-itens')
+  if (!wrap) return
+  wrap.innerHTML = ''
+  itens.forEach(it => {
+    const c = document.createElement('div')
+    c.className = 'chip'
+    c.textContent = it.desc + ' — R$ ' + fmtMoeda(parseFloat(it.val||0))
+    c.onclick = () => addItemRecibo(it.desc, 1, fmtMoeda(parseFloat(it.val||0)))
+    wrap.appendChild(c)
+  })
+}
+
+function renderSugestoesIRPF() {
+  const lista = document.getElementById('ir-tipo-sugestoes')
+  if (!lista) return
+  const itens = S.g('itens')
+  lista.innerHTML = ''
+  if (!itens.length) {
+    const padrao = [
+      'Honorários contábeis',
+      'Serviços de assessoria fiscal',
+      'Serviços contábeis e fiscais',
+      'Elaboração e entrega da declaração de IRPF',
+      'Assessoria contábil e fiscal',
+      'Consultoria tributária',
+      'Outros serviços contábeis'
+    ]
+    padrao.forEach(desc => {
+      const opt = document.createElement('option')
+      opt.value = desc
+      lista.appendChild(opt)
+    })
+    return
+  }
+  itens.forEach(it => {
+    const opt = document.createElement('option')
+    opt.value = it.desc
+    lista.appendChild(opt)
+  })
+}
+
+// ========= CARREGAR ITENS DO CLIENTE =========
+function carregarItensCli() {
+  const id = document.getElementById('r-cliente').value
+  const nome = document.getElementById('r-cli-nome')
+  const doc = document.getElementById('r-cli-doc')
+  const end = document.getElementById('r-cli-end')
+  if (!id) {
+    nome.value = ''
+    doc.value = ''
+    end.value = ''
+    return
+  }
+  const cli = S.g('clientes').find(c => c.id == id)
+  if (!cli) return
+  nome.value = cli.nome || ''
+  doc.value = cli.doc || ''
+  end.value = cli.end || ''
+  if (cli.itens && cli.itens.length) {
+    document.getElementById('r-itens-lista').innerHTML = ''
+    cli.itens.forEach(it => addItemRecibo(it.desc, it.qtd||1, fmtMoeda(parseFloat(it.val||0))))
+  }
+}
+
+// ========= NOVO RECIBO (AVULSO) =========
+function montarReciboAvulso() {
+  const cliId = document.getElementById('r-cliente').value
+  const cliCadastro = cliId ? S.g('clientes').find(c => c.id == cliId) : null
+  const cliNome = document.getElementById('r-cli-nome').value.trim() || (cliCadastro?.nome || '')
+  const cliDoc = document.getElementById('r-cli-doc').value.trim() || (cliCadastro?.doc || '')
+  const cliEnd = document.getElementById('r-cli-end').value.trim() || (cliCadastro?.end || '')
+  const itens = []
+  document.querySelectorAll('#r-itens-lista .item-row').forEach(row => {
+    const desc = row.querySelectorAll('input')[0].value.trim()
+    const qtd = parseFloat(row.querySelectorAll('input')[1].value) || 1
+    const val = parseMoeda(row.querySelectorAll('input')[2].value)
+    if (desc) itens.push({desc, qtd, val})
+  })
+  if (!cliNome) { alert('Informe o nome do cliente.'); return null }
+  if (!itens.length) { alert('Adicione pelo menos um item.'); return null }
+  if (itens.length > MAX_ITENS_RECIBO) itens.splice(MAX_ITENS_RECIBO)
+  return {
+    num: document.getElementById('r-num').value,
+    ref: document.getElementById('r-ref').value,
+    venc: document.getElementById('r-venc').value,
+    regime: document.getElementById('r-regime').value,
+    obs: document.getElementById('r-obs').value,
+    cli: { nome: cliNome, doc: cliDoc, end: cliEnd },
+    itens
+  }
+}
+
+function montarLinhasFixasItens(itens) {
+  const base = (itens || []).slice(0, MAX_ITENS_RECIBO)
+  while (base.length < MAX_ITENS_RECIBO) base.push({desc:'', qtd:'', val:'', total:''})
+  return base
+}
+
+function htmlItensFixos(itens) {
+  return montarLinhasFixasItens(itens).map(it => `
+        <tr>
+          <td>${it.desc || '&nbsp;'}</td>
+          <td style="text-align:center">${it.qtd !== '' ? it.qtd : '&nbsp;'}</td>
+          <td style="text-align:right">${it.val !== '' && it.val !== undefined ? fmtMoeda(Number(it.val)||0) : '&nbsp;'}</td>
+          <td style="text-align:right;font-weight:700;color:#1B3A6B">${it.total !== '' && it.total !== undefined ? fmtMoeda(Number(it.total)||0) : '&nbsp;'}</td>
+        </tr>
+      `).join('')
+}
+
+function preVisualizarRecibo() {
+  gerarReciboAvulso(false)
+}
+
+function gerarReciboAvulso(imprimir) {
+  const data = montarReciboAvulso()
+  if (!data) return
+  const cfg = S.cfg()
+  const {num, ref, venc, regime, obs, cli, itens} = data
+  const total = itens.reduce((s, i) => s + i.qtd * i.val, 0)
+  const decl = cfg.decl || 'Declaro ter recebido a importância acima discriminada, referente a serviços prestados, ficando quitado o presente recibo.'
+
+  const meta = []
+  if (ref) meta.push(`<div class="rct-ref-item"><div class="rl">Referência</div><div class="rv">${fmtMesRef(ref)}</div></div>`)
+  if (venc) meta.push(`<div class="rct-ref-item"><div class="rl">Vencimento</div><div class="rv">${fmtData(venc)}</div></div>`)
+  if (regime) meta.push(`<div class="rct-ref-item"><div class="rl">Regime</div><div class="rv">${regime}</div></div>`)
+
+  function htmlViaInterna(label) {
+    return `
+      <div class="rct-head">
+        <div class="rct-escritorio">
+          <h2>${cfg.nome || 'Escritório Contábil'}</h2>
+          <p>${cfg.cnpj ? 'CNPJ: ' + cfg.cnpj + ' &nbsp;|&nbsp; ' : ''}${cfg.crc || ''}</p>
+          <p>${cfg.end || ''}</p>
+          <p>${cfg.tel ? 'Tel: ' + cfg.tel : ''}${cfg.email ? ' &nbsp;|&nbsp; ' + cfg.email : ''}</p>
+        </div>
+        <div class="rct-numero">
+          <div class="num-label">Recibo nº</div>
+          <div class="num">${num}</div>
+        </div>
+      </div>
+      <hr class="rct-divider">
+      <div class="rct-title">Recibo de Prestação de Serviços</div>
+
+      <div class="rct-cli-box">
+        <p><strong>${cli.nome || 'Cliente não informado'}</strong></p>
+        <p>${cli.doc ? 'CPF/CNPJ: ' + cli.doc + ' &nbsp;&nbsp; ' : ''}${cli.end ? cli.end : ''}</p>
+      </div>
+
+      ${meta.length ? `<div class="rct-ref-row">${meta.join('')}</div>` : ''}
+      ${obs ? `<p class="rct-obs-compacta">${obs}</p>` : ''}
+
+      <table class="rct-itens">
+        <thead><tr>
+          <th style="width:52%">Descrição do Serviço</th>
+          <th style="width:8%;text-align:center">Qtd</th>
+          <th style="width:18%;text-align:right">Valor Unit. R$</th>
+          <th style="width:22%;text-align:right">Total R$</th>
+        </tr></thead>
+        <tbody>${htmlItensFixos(itens.map(it => ({...it, total: it.qtd * it.val})))}</tbody>
+      </table>
+
+      <div class="rct-total-row"><div class="rct-total-box"><div class="tl">Total</div><div class="tv">R$ ${fmtMoeda(total)}</div></div></div>
+      ${cfg.pix ? `<div class="rct-pix-box"><p>🔑 <strong>Pix ${cfg.pixTipo || ''}: ${cfg.pix}</strong><br>${cfg.banco ? 'Banco: ' + cfg.banco : ''}</p></div>` : ''}
+      <div class="rct-decl">${decl}</div>
+      <div class="rct-ass-row">
+        <div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div><div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div></div>
+        <div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${cfg.cidade || ''}, ______ de ____________________ de 20______</div></div>
+      </div>
+      <div class="via-label">${label}</div>`
+  }
+
+  document.getElementById('print-recibo').innerHTML = `
+    <div class="recibo-folha-13cm">
+      <div class="via-bloco-13cm topo">${htmlViaInterna('VIA IDÊNTICA')}</div>
+      <div class="via-bloco-13cm baixo">${htmlViaInterna('VIA IDÊNTICA')}</div>
+    </div>`
+
+  if (imprimir) setTimeout(() => window.print(), 100)
+}
+
+function imprimirRecibo() {
+  gerarReciboAvulso(true)
+}
+
+function limparRecibo() {
+
+  document.getElementById('r-cliente').value = ''
+  document.getElementById('r-cli-nome').value = ''
+  document.getElementById('r-cli-doc').value = ''
+  document.getElementById('r-cli-end').value = ''
+  document.getElementById('r-regime').value = ''
+  document.getElementById('r-obs').value = ''
+  document.getElementById('r-itens-lista').innerHTML = ''
+  document.getElementById('r-num').value = proximoNumero()
+  document.getElementById('r-ref').value = ''
+  document.getElementById('r-venc').value = ''
+  addItemRecibo()
+  atualizarBotaoItensRecibo()
+}
+
+function linhaCidadeData(cidade='') {
+  const cidadeTxt = cidade ? cidade + ', ' : ''
+  return `${cidadeTxt}______ DE ________________________ DE __________`
+}
+
+// ========= IMPRIMIR IRPF =========
+function preencherDadosIR() {
+  const id = document.getElementById('ir-cliente').value
+  if (!id) {
+    document.getElementById('ir-nome').value = ''
+    document.getElementById('ir-cpf').value = ''
+    document.getElementById('ir-end').value = ''
+    return
+  }
+  const cli = S.g('clientes').find(c => c.id == id)
+  if (!cli) return
+  document.getElementById('ir-nome').value = cli.nome || ''
+  document.getElementById('ir-cpf').value = cli.doc || ''
+  document.getElementById('ir-end').value = cli.end || ''
+}
+
+function preIRData() {
+  const cfg = S.cfg()
+  document.getElementById('ir-cidade').value = cfg.cidade || ''
+}
+
+function abrirCadastroServicos() {
+  const navItem = document.querySelector('.nav-item[data-sec="itens"]')
+  if (navItem) nav(navItem)
+  const campo = document.getElementById('ic-desc')
+  if (campo) setTimeout(() => campo.focus(), 50)
+}
+
+function limparIRPF() {
+  document.getElementById('ir-cliente').value = ''
+  document.getElementById('ir-nome').value = ''
+  document.getElementById('ir-cpf').value = ''
+  document.getElementById('ir-end').value = ''
+  document.getElementById('ir-valor').value = ''
+  document.getElementById('ir-tipo').value = ''
+  document.getElementById('ir-data').value = new Date().toISOString().slice(0,10)
+  document.getElementById('ir-cidade').value = S.cfg().cidade || ''
+  document.getElementById('ir-obs').value = ''
+  document.getElementById('ir-num').value = proximoNumeroIRPF()
+}
+
+function gravarEImprimirIRPF() {
+  const salvo = salvarReciboIRPF(true)
+  if (salvo) imprimirIRPF()
+}
+
+function salvarReciboIRPF(silencioso=false) {
+  const id = document.getElementById('ir-cliente').value
+  const nome = document.getElementById('ir-nome').value.trim()
+  const cpf = document.getElementById('ir-cpf').value.trim()
+  const end = document.getElementById('ir-end').value.trim()
+  const valor = parseMoeda(document.getElementById('ir-valor').value)
+  const tipo = document.getElementById('ir-tipo').value.trim()
+  if (!id) { alert('Selecione um cliente cadastrado.'); return false }
+  if (!nome || !valor) { alert('Preencha o cliente e o valor.'); return false }
+  if (!tipo) { alert('Informe a descrição do serviço.'); return false }
+
+  const recs = S.g('recibos_ir')
+  const numAtual = document.getElementById('ir-num').value
+  const jaExiste = recs.some(r => r.num === numAtual)
+  if (!jaExiste) {
+    recs.push({
+      id: Date.now(),
+      cliId: id,
+      num: numAtual,
+      nome,
+      cpf,
+      end,
+      valor,
+      tipo,
+      data: document.getElementById('ir-data').value,
+      cidade: document.getElementById('ir-cidade').value,
+      obs: document.getElementById('ir-obs').value.trim(),
+      pgto: '',
+      criado: new Date().toISOString()
+    })
+    S.s('recibos_ir', recs)
+  }
+
+  if (!silencioso) alert('✅ Recibo IRPF gravado no histórico!')
+  if (!jaExiste) document.getElementById('ir-num').value = proximoNumeroIRPF()
+  return true
+}
+
+function imprimirIRPF() {
+  gerarIRPF(true)
+}
+
+function gerarIRPF(imprimir) {
+  const cfg = S.cfg()
+  const nome = document.getElementById('ir-nome').value.trim()
+  const cpf = document.getElementById('ir-cpf').value.trim()
+  const end = document.getElementById('ir-end').value.trim()
+  const valor = parseMoeda(document.getElementById('ir-valor').value)
+  const tipo = document.getElementById('ir-tipo').value
+  const data = document.getElementById('ir-data').value
+  const num = document.getElementById('ir-num').value
+  const cidade = document.getElementById('ir-cidade').value
+  const obs = document.getElementById('ir-obs').value.trim()
+
+  if (!nome || !valor) { alert('Preencha o nome do cliente e o valor.'); return }
+  if (!tipo.trim()) { alert('Informe a descrição do serviço.'); return }
+
+  const valorExtenso = valorPorExtenso(valor)
+  const decl = `Declaro ter recebido de ${nome}${cpf ? ' (CPF: ' + cpf + ')' : ''}, a importância de R$ ${fmtMoeda(valor)} (${valorExtenso}), referente a ${tipo}, ficando quitado o presente recibo.`
+
+  function htmlViaIR(label) {
+    return `
+<div class="via-bloco">
+  <div class="rct-head">
+    <div class="rct-escritorio">
+      <h2>${cfg.nome || 'Escritório Contábil'}</h2>
+      <p>${cfg.cnpj ? 'CNPJ: ' + cfg.cnpj + ' &nbsp;|&nbsp; ' : ''}${cfg.crc || ''}</p>
+      <p>${cfg.end || ''}</p>
+      <p>${cfg.tel || ''}${cfg.email ? ' &nbsp;|&nbsp; ' + cfg.email : ''}</p>
+    </div>
+    <div class="rct-numero">
+      <div class="num-label">Recibo nº</div>
+      <div class="num">${num}</div>
+      <div style="font-size:7.5pt;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Data do Recibo</div>
+      <div style="font-size:9.5pt;color:#555;font-weight:600">${data ? fmtData(data) : ''}</div>
+    </div>
+  </div>
+  <hr class="rct-divider">
+  <div class="rct-title">Recibo IRPF</div>
+
+  <div class="rct-cli-box">
+    <p><strong>Cliente: ${nome}</strong></p>
+    <p>${cpf ? 'CPF: ' + cpf + '  &nbsp;&nbsp; ' : ''}${end || ''}</p>
+  </div>
+
+  ${obs ? `<p style="font-size:10pt;color:#555;margin-bottom:3mm;font-style:italic">${obs}</p>` : ''}
+
+  <table class="rct-itens" style="margin-bottom:4mm">
+    <thead><tr>
+      <th>Descrição</th>
+      <th style="width:24%;text-align:right">Valor R$</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>${tipo}</td>
+        <td style="text-align:right;font-weight:700;color:#1B3A6B">R$ ${fmtMoeda(valor)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rct-total-row">
+    <div class="rct-total-box">
+      <div class="tl">Total</div>
+      <div class="tv">R$ ${fmtMoeda(valor)}</div>
+    </div>
+  </div>
+
+  <div class="rct-decl">${decl}</div>
+
+  <div class="rct-ass-row">
+    <div class="rct-ass-col">
+      <div class="rct-ass-linha"></div>
+      <div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div>
+      <div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div>
+    </div>
+    <div class="rct-ass-col" style="justify-content:flex-end">
+      <div class="rct-ass-nome">${cidade || cfg.cidade || ''}, ______ de ____________________ de 20______</div>
+    </div>
+  </div>
+  <div class="via-label">${label}</div>
+</div>`
+  }
+
+  document.getElementById('print-recibo').innerHTML = `
+  <div class="recibo-folha">
+    ${htmlViaIR('VIA IDÊNTICA')}
+    ${htmlViaIR('VIA IDÊNTICA')}
+  </div>`
+
+  if (imprimir) {
+    setTimeout(() => window.print(), 100)
+  } else {
+    alert('Pré-visualização gerada! Clique em "Imprimir 2 Vias" para imprimir.')
+  }
+}
+
+// ========= VALOR POR EXTENSO =========
+function valorPorExtenso(v) {
+  const inteiros = Math.floor(v)
+  const centavos = Math.round((v - inteiros) * 100)
+  const extenNums = ['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove',
+    'dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove']
+  const dezenas = ['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa']
+  const centenas = ['','cem','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos']
+
+  function numExtenso(n) {
+    if (n === 0) return 'zero'
+    if (n < 20) return extenNums[n]
+    if (n < 100) {
+      const d = Math.floor(n/10), u = n%10
+      return dezenas[d] + (u ? ' e ' + extenNums[u] : '')
+    }
+    if (n === 100) return 'cem'
+    if (n < 1000) {
+      const c = Math.floor(n/100), r = n%100
+      return centenas[c] + (r ? ' e ' + numExtenso(r) : '')
+    }
+    if (n < 1000000) {
+      const m = Math.floor(n/1000), r = n%1000
+      return numExtenso(m) + ' mil' + (r ? ' e ' + numExtenso(r) : '')
+    }
+    return n.toString()
+  }
+
+  let s = numExtenso(inteiros) + (inteiros === 1 ? ' real' : ' reais')
+  if (centavos > 0) s += ' e ' + numExtenso(centavos) + (centavos === 1 ? ' centavo' : ' centavos')
+  return s
+}
+
+// ========= HISTÓRICO =========
+function atualizarStats() {
+  const recs = S.g('recibos')
+  const recsIR = S.g('recibos_ir')
+  const hoje = new Date()
+  const mesAtual = hoje.toISOString().slice(0,7)
+  const totalGeral = recs.reduce((s, r) => s + (r.total||0), 0) + recsIR.reduce((s,r)=>s+(r.valor||0),0)
+  const totalMes = recs.filter(r => r.ref?.startsWith(mesAtual)).reduce((s, r) => s + (r.total||0), 0) + recsIR.filter(r => (r.data||'').startsWith(mesAtual)).reduce((s,r)=>s+(r.valor||0),0)
+  const totalPagos = recsIR.length
+  const totalRecibosComuns = recs.length
+  document.getElementById('hist-stats').innerHTML = `
+    <div class="stat-card"><div class="sv">R$ ${fmtMoeda(totalMes)}</div><div class="sl">Emitidos este mês</div></div>
+    <div class="stat-card"><div class="sv">R$ ${fmtMoeda(totalGeral)}</div><div class="sl">Total geral</div></div>
+    <div class="stat-card"><div class="sv" style="color:var(--green)">${totalPagos}</div><div class="sl">Recibos IRPF salvos</div></div>
+    <div class="stat-card"><div class="sv" style="color:var(--red)">${totalRecibosComuns}</div><div class="sl">Recibos comuns</div></div>
+  `
+}
+
+function renderHistorico() {
+  popularSelects()
+  const comuns = S.g('recibos').map(r => ({...r, _tipo:'comum'}))
+  const irpfs = S.g('recibos_ir').map(r => ({...r, cliNome:r.nome, _tipo:'irpf'}))
+  const recs = [...comuns, ...irpfs]
+  const busca = document.getElementById('h-busca')?.value.toLowerCase() || ''
+  const cliF = document.getElementById('h-cli')?.value || ''
+  const mesF = document.getElementById('h-mes')?.value || ''
+  const anoF = document.getElementById('h-ano')?.value || ''
+  const statusF = document.getElementById('h-status')?.value || ''
+
+  let filtrados = recs.filter(r => {
+    const textoBusca = `${r.num||''} ${r.cliNome||''} ${r.obs||''} ${r._tipo==='irpf' ? (r.tipo||'') : ((r.itens||[]).map(i=>i.desc).join(' '))}`.toLowerCase()
+    if (busca && !textoBusca.includes(busca)) return false
+    if (cliF && r.cliId != cliF) return false
+    if (mesF && ((r._tipo==='irpf' ? (r.data||'') : (r.ref||'')).slice(0,7) !== mesF)) return false
+    if (anoF && ((r._tipo==='irpf' ? (r.data||'') : (r.ref||'')).slice(0,4) !== anoF)) return false
+    if (statusF === 'pago' && !r.pgto) return false
+    if (statusF === 'pendente' && r.pgto) return false
+    return true
+  }).sort((a,b) => new Date(b.criado) - new Date(a.criado))
+
+  const totalFilt = filtrados.reduce((s, r) => s + (r._tipo==='irpf' ? (r.valor||0) : (r.total||0)), 0)
+  document.getElementById('h-total-filtro').textContent = `${filtrados.length} recibo(s) encontrado(s) — Total: R$ ${fmtMoeda(totalFilt)}`
+
+  const lista = document.getElementById('hist-lista')
+  if (!filtrados.length) {
+    lista.innerHTML = '<div class="tbl-empty">Nenhum recibo encontrado.</div>'
+    return
+  }
+
+  lista.innerHTML = filtrados.map(r => r._tipo === 'irpf' ? `
+    <div class="hist-card fade-in">
+      <div class="hist-card-head">
+        <div>
+          <div class="hist-num">Nº ${r.num} <span class="badge badge-orange">IRPF</span></div>
+          <div class="hist-cli">${r.nome || '—'}</div>
+          <div class="hist-ref">Data: ${r.data ? fmtData(r.data) : '—'} &nbsp;|&nbsp; ${r.pgto ? '✅ Pago em ' + fmtData(r.pgto) : '<span style="color:var(--red)">⏳ Pendente</span>'}</div>
+        </div>
+        <div class="hist-val">R$ ${fmtMoeda(r.valor||0)}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--ink2)">${r.obs || (r.tipo || '')}</div>
+      <div class="hist-actions">
+        <button class="btn btn-o btn-xs" onclick="reimprimirIRPF(${r.id})">🖨️ Imprimir</button>
+        <button class="btn ${r.pgto ? 'btn-o' : 'btn-g'} btn-xs" onclick="marcarPagoIRPF(${r.id})">${r.pgto ? '↩ Desmarcar pago' : '✅ Marcar pago'}</button>
+        <button class="btn btn-d btn-xs" onclick="excluirReciboIRPF(${r.id})">🗑️</button>
+      </div>
+    </div>
+  ` : `
+    <div class="hist-card fade-in">
+      <div class="hist-card-head">
+        <div>
+          <div class="hist-num">Nº ${r.num}</div>
+          <div class="hist-cli">${r.cliNome || '—'}</div>
+          <div class="hist-ref">Ref: ${r.ref ? fmtMesRef(r.ref) : '—'} &nbsp;|&nbsp; Venc: ${r.venc ? fmtData(r.venc) : '—'} &nbsp;|&nbsp; ${r.pgto ? '✅ Pago em ' + fmtData(r.pgto) : '<span style="color:var(--red)">⏳ Pendente</span>'}</div>
+        </div>
+        <div class="hist-val">R$ ${fmtMoeda(r.total||0)}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--ink2)">${(r.itens||[]).map(i => i.desc).join(' • ')}</div>
+      <div class="hist-actions">
+        <button class="btn btn-o btn-xs" onclick="reimprimir(${r.id})">🖨️ Imprimir</button>
+        <button class="btn btn-o btn-xs" onclick="editarRecibo(${r.id})">✏️ Editar</button>
+        <button class="btn ${r.pgto ? 'btn-o' : 'btn-g'} btn-xs" onclick="marcarPago(${r.id})">${r.pgto ? '↩ Desmarcar pago' : '✅ Marcar pago'}</button>
+        <button class="btn btn-d btn-xs" onclick="excluirRecibo(${r.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('')
+}
+
+function marcarPago(id) {
+  const recs = S.g('recibos')
+  const r = recs.find(r => r.id == id)
+  if (!r) return
+  if (r.pgto) { r.pgto = '' }
+  else { r.pgto = new Date().toISOString().slice(0,10) }
+  S.s('recibos', recs)
+  renderHistorico(); atualizarStats()
+}
+
+
+function marcarPagoIRPF(id) {
+  const recs = S.g('recibos_ir')
+  const r = recs.find(r => r.id == id)
+  if (!r) return
+  if (r.pgto) { r.pgto = '' }
+  else { r.pgto = new Date().toISOString().slice(0,10) }
+  S.s('recibos_ir', recs)
+  renderHistorico(); atualizarStats()
+}
+
+function excluirRecibo(id) {
+  if (!confirm('Excluir este recibo? Esta ação não pode ser desfeita.')) return
+  S.s('recibos', S.g('recibos').filter(r => r.id != id))
+  renderHistorico(); atualizarStats()
+}
+
+function reimprimir(id) {
+  const r = S.g('recibos').find(r => r.id == id)
+  if (!r) return
+  const cfg = S.cfg()
+  const cliCadastro = S.g('clientes').find(c => c.id == r.cliId) || {}
+  const cli = {
+    nome: r.cliNome || cliCadastro.nome || '',
+    doc: r.cliDoc || cliCadastro.doc || '',
+    end: r.cliEnd || cliCadastro.end || ''
+  }
+  const decl = cfg.decl || 'Declaro ter recebido a importância acima discriminada, referente a serviços prestados, ficando quitado o presente recibo.'
+  const meta = []
+  if (r.ref) meta.push(`<div class="rct-ref-item"><div class="rl">Referência</div><div class="rv">${fmtMesRef(r.ref)}</div></div>`)
+  if (r.venc) meta.push(`<div class="rct-ref-item"><div class="rl">Vencimento</div><div class="rv">${fmtData(r.venc)}</div></div>`)
+  if (r.regime) meta.push(`<div class="rct-ref-item"><div class="rl">Regime</div><div class="rv">${r.regime}</div></div>`)
+
+  function htmlVia(label) {
+    return `
+<div class="via-bloco">
+  <div class="rct-head">
+    <div class="rct-escritorio">
+      <h2>${cfg.nome || 'Escritório Contábil'}</h2>
+      <p>${cfg.cnpj ? 'CNPJ: ' + cfg.cnpj + ' | ' : ''}${cfg.crc || ''}</p>
+      <p>${cfg.end || ''}</p>
+    </div>
+    <div class="rct-numero">
+      <div class="num-label">Recibo nº</div>
+      <div class="num">${r.num}</div>
+    </div>
+  </div>
+  <hr class="rct-divider">
+  <div class="rct-title">Recibo de Prestação de Serviços</div>
+  <div class="rct-cli-box">
+    <p><strong>${cli.nome || 'Cliente'}</strong></p>
+    <p>${cli.doc ? 'CPF/CNPJ: ' + cli.doc + ' &nbsp;&nbsp; ' : ''}${cli.end || ''}</p>
+  </div>
+  ${meta.length ? `<div class="rct-ref-row">${meta.join('')}</div>` : ''}
+  <table class="rct-itens">
+    <thead><tr><th>Descrição</th><th style="text-align:center">Qtd</th><th style="text-align:right">Unit.</th><th style="text-align:right">Total</th></tr></thead>
+    <tbody>${htmlItensFixos((r.itens||[]).slice(0, MAX_ITENS_RECIBO).map(it => ({...it, total: it.qtd * it.val})))}</tbody>
+  </table>
+  <div class="rct-total-row"><div class="rct-total-box"><div class="tl">Total</div><div class="tv">R$ ${fmtMoeda(r.total)}</div></div></div>
+  ${cfg.pix ? `<div class="rct-pix-box"><p>🔑 <strong>Pix: ${cfg.pix}</strong></p></div>` : ''}
+  <div class="rct-decl" style="margin-bottom:2mm">${decl}</div>
+  <div class="rct-ass-row" style="padding-bottom:0">
+    <div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${cfg.cont||cfg.nome||'Responsável'}</div><div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div></div>
+    <div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${cfg.cidade||''}, ______ de ____________________ de 20______</div></div>
+  </div>
+  <div class="via-label">${label}</div>
+</div>`
+  }
+  document.getElementById('print-recibo').innerHTML = `<div class="recibo-folha">${htmlVia('VIA IDÊNTICA')}
+${htmlVia('VIA IDÊNTICA')}</div>`
+  setTimeout(() => window.print(), 100)
+}
+
+function excluirReciboIRPF(id) {
+  if (!confirm('Excluir este recibo IRPF? Esta ação não pode ser desfeita.')) return
+  S.s('recibos_ir', S.g('recibos_ir').filter(r => r.id != id))
+  renderHistorico(); atualizarStats()
+}
+
+function reimprimirIRPF(id) {
+  const r = S.g('recibos_ir').find(r => r.id == id)
+  if (!r) return
+  const cfg = S.cfg()
+  function htmlViaIR(label) {
+    return `
+<div class="via-bloco">
+  <div class="rct-head">
+    <div class="rct-escritorio">
+      <h2>${cfg.nome || 'Escritório Contábil'}</h2>
+      <p>${cfg.cnpj ? 'CNPJ: ' + cfg.cnpj + ' &nbsp;|&nbsp; ' : ''}${cfg.crc || ''}</p>
+      <p>${cfg.end || ''}</p>
+      <p>${cfg.tel || ''}${cfg.email ? ' &nbsp;|&nbsp; ' + cfg.email : ''}</p>
+    </div>
+    <div class="rct-numero">
+      <div class="num-label">Recibo nº</div>
+      <div class="num">${r.num}</div>
+      <div style="font-size:7.5pt;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Data do Recibo</div>
+      <div style="font-size:9.5pt;color:#555;font-weight:600">${r.data ? fmtData(r.data) : ''}</div>
+    </div>
+  </div>
+  <hr class="rct-divider">
+  <div class="rct-title">Recibo IRPF</div>
+  <div class="rct-cli-box">
+    <p><strong>Cliente: ${r.nome}</strong></p>
+    <p>${r.cpf ? 'CPF/CNPJ: ' + r.cpf + '  &nbsp;&nbsp; ' : ''}${r.end || ''}</p>
+  </div>
+  ${r.obs ? `<p style="font-size:10pt;color:#555;margin-bottom:3mm;font-style:italic">${r.obs}</p>` : ''}
+  <table class="rct-itens" style="margin-bottom:4mm"><thead><tr><th>Descrição</th><th style="width:24%;text-align:right">Valor R$</th></tr></thead><tbody><tr><td>${r.tipo || '—'}</td><td style="text-align:right;font-weight:700;color:#1B3A6B">R$ ${fmtMoeda(r.valor||0)}</td></tr></tbody></table>
+  <div class="rct-total-row"><div class="rct-total-box"><div class="tl">Total</div><div class="tv">R$ ${fmtMoeda(r.valor||0)}</div></div></div>
+  <div class="rct-decl">Declaro ter recebido de ${r.nome}${r.cpf ? ' (CPF/CNPJ: ' + r.cpf + ')' : ''}, a importância de R$ ${fmtMoeda(r.valor||0)}, referente a ${r.tipo || 'serviços prestados'}, ficando quitado o presente recibo.</div>
+  <div class="rct-ass-row"><div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div><div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div></div><div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${r.cidade || cfg.cidade || ''}, ______ de ____________________ de 20______</div></div></div>
+  <div class="via-label">${label}</div>
+</div>`
+  }
+  document.getElementById('print-recibo').innerHTML = `<div class="recibo-folha">${htmlViaIR('VIA IDÊNTICA')}${htmlViaIR('VIA IDÊNTICA')}</div>`
+  setTimeout(() => window.print(), 100)
+}
+
+function editarRecibo(id) {
+  const r = S.g('recibos').find(r => r.id == id)
+  if (!r) return
+  _edicaoId = id
+  const clientes = S.g('clientes')
+  const opsCli = clientes.map(c => `<option value="${c.id}" ${r.cliId==c.id?'selected':''}>${c.nome}</option>`).join('')
+  document.getElementById('modal-recibo-body').innerHTML = `
+    <div class="fg fg3">
+      <div class="field"><label>Referência</label><input type="month" id="ed-ref" value="${r.ref||''}"></div>
+      <div class="field"><label>Vencimento</label><input type="date" id="ed-venc" value="${r.venc||''}"></div>
+      <div class="field"><label>Regime</label><input type="text" id="ed-regime" value="${r.regime||''}"></div>
+    </div>
+    <div class="fg fg2">
+      <div class="field"><label>Cliente cadastrado</label><select id="ed-cli"><option value="">—</option>${opsCli}</select></div>
+      <div class="field"><label>Observação</label><input type="text" id="ed-obs" value="${r.obs||''}"></div>
+    </div>
+    <div class="fg fg3">
+      <div class="field s2"><label>Nome do cliente</label><input type="text" id="ed-cli-nome" value="${r.cliNome||''}"></div>
+      <div class="field"><label>CPF / CNPJ</label><input type="text" id="ed-cli-doc" value="${r.cliDoc||''}"></div>
+      <div class="field s3"><label>Endereço</label><input type="text" id="ed-cli-end" value="${r.cliEnd||''}"></div>
+    </div>
+    <div class="itens-header"><span>Descrição</span><span>Qtd</span><span>Valor R$</span><span></span></div>
+    <div id="ed-itens"></div>
+    <button class="btn btn-o btn-sm" onclick="addItemEd()">+ Item</button>
+    <div class="total-bar" id="ed-total" style="margin-top:10px">Total: R$ 0,00</div>
+  `
+  r.itens.forEach(it => addItemEd(it.desc, it.qtd, fmtMoeda(it.val)))
+  calcTotalEd()
+  document.getElementById('modal-recibo').classList.add('open')
+}
+
+function addItemEd(desc='', qtd=1, val='') {
+  const lista = document.getElementById('ed-itens')
+  const div = document.createElement('div')
+  div.className = 'item-row'
+  div.innerHTML = `
+    <input type="text" value="${desc}" oninput="calcTotalEd()">
+    <input type="number" value="${qtd}" min="1" oninput="calcTotalEd()">
+    <input type="text" value="${val}" oninput="formatarMoeda(this);calcTotalEd()">
+    <button class="btn-rm" onclick="this.parentElement.remove();calcTotalEd()">✕</button>
+  `
+  lista.appendChild(div)
+}
+
+function calcTotalEd() {
+  let total = 0
+  document.querySelectorAll('#ed-itens .item-row').forEach(row => {
+    const qtd = parseFloat(row.querySelectorAll('input')[1].value) || 0
+    const val = parseMoeda(row.querySelectorAll('input')[2].value)
+    total += qtd * val
+  })
+  const el = document.getElementById('ed-total')
+  if (el) el.textContent = 'Total: ' + fmtMoeda(total)
+  return total
+}
+
+function salvarEdicaoRecibo() {
+  const recs = S.g('recibos')
+  const idx = recs.findIndex(r => r.id == _edicaoId)
+  if (idx < 0) return
+  const cliId = document.getElementById('ed-cli').value
+  const cli = cliId ? S.g('clientes').find(c => c.id == cliId) : null
+  const itens = []
+  document.querySelectorAll('#ed-itens .item-row').forEach(row => {
+    const desc = row.querySelectorAll('input')[0].value.trim()
+    const qtd = parseFloat(row.querySelectorAll('input')[1].value) || 1
+    const val = parseMoeda(row.querySelectorAll('input')[2].value)
+    if (desc) itens.push({desc, qtd, val})
+  })
+  const original = recs[idx]
+  recs[idx] = {
+    ...original,
+    ref: document.getElementById('ed-ref').value,
+    venc: document.getElementById('ed-venc').value,
+    cliId,
+    cliNome: document.getElementById('ed-cli-nome').value.trim() || cli?.nome || original.cliNome || '',
+    cliDoc: document.getElementById('ed-cli-doc').value.trim() || cli?.doc || original.cliDoc || '',
+    cliEnd: document.getElementById('ed-cli-end').value.trim() || cli?.end || original.cliEnd || '',
+    regime: document.getElementById('ed-regime').value.trim(),
+    obs: document.getElementById('ed-obs').value,
+    itens,
+    total: itens.reduce((s,i) => s + i.qtd*i.val, 0)
+  }
+  S.s('recibos', recs)
+  fecharModal('modal-recibo')
+  renderHistorico()
+  atualizarStats()
+  alert('✅ Recibo atualizado!')
+}
+
+function fecharModal(id) { document.getElementById(id).classList.remove('open') }
+
+// ========= REPLICAR EM LOTE =========
+function replicarRecibos() {
+  const origem = document.getElementById('rep-origem').value
+  const destino = document.getElementById('rep-destino').value
+  if (!origem || !destino) { alert('Selecione origem e destino.'); return }
+  if (origem === destino) { alert('Origem e destino devem ser diferentes.'); return }
+  const recs = S.g('recibos')
+  const filtrados = recs.filter(r => r.ref?.slice(0,7) === origem)
+  if (!filtrados.length) { alert('Nenhum recibo encontrado na referência de origem.'); return }
+
+  if (!confirm(`Replicar ${filtrados.length} recibo(s) de ${fmtMesRef(origem)} para ${fmtMesRef(destino)}?`)) return
+
+  const novos = filtrados.map(r => ({
+    ...r,
+    id: Date.now() + Math.random(),
+    num: proximoNumero(),
+    ref: destino,
+    pgto: '',
+    criado: new Date().toISOString()
+  }))
+  S.s('recibos', [...recs, ...novos])
+  document.getElementById('rep-preview').innerHTML = `
+    <div class="aviso" style="background:var(--green-bg);border-color:#86efac;color:var(--green)">
+      ✅ ${novos.length} recibo(s) replicado(s) para ${fmtMesRef(destino)}. Acesse o histórico para editar individualmente.
+    </div>`
+  renderHistorico(); atualizarStats()
+}
+
+// ========= CLIENTES =========
+let _editCliId = null
+
+function salvarCliente() {
+  const nome = document.getElementById('c-nome').value.trim()
+  if (!nome) { alert('Informe o nome do cliente.'); return }
+
+  const itens = []
+  document.querySelectorAll('#c-itens-lista .item-row').forEach(row => {
+    const desc = row.querySelectorAll('input')[0].value.trim()
+    const qtd = parseFloat(row.querySelectorAll('input')[1].value) || 1
+    const val = parseMoeda(row.querySelectorAll('input')[2].value)
+    if (desc) itens.push({desc, qtd, val})
+  })
+
+  const cli = {
+    id: _editCliId || Date.now(),
+    nome: nome.toUpperCase(),
+    doc: document.getElementById('c-doc').value.trim(),
+    tipo: document.getElementById('c-tipo').value,
+    email: document.getElementById('c-email').value.trim().toLowerCase(),
+    tel: document.getElementById('c-tel').value.trim(),
+    end: montarEnderecoCliente().toUpperCase(),
+    endLog: document.getElementById('c-end').value.trim().toUpperCase(),
+    endNum: document.getElementById('c-num').value.trim().toUpperCase(),
+    cep: document.getElementById('c-cep').value.trim(),
+    bairro: document.getElementById('c-bairro').value.trim().toUpperCase(),
+    cidadeCli: document.getElementById('c-cidade').value.trim().toUpperCase(),
+    ufCli: (document.getElementById('c-uf').value.trim() || '').toUpperCase(),
+    venc: document.getElementById('c-venc').value,
+    banco: document.getElementById('c-banco').value.trim().toUpperCase(),
+    obsInt: document.getElementById('c-obsint').value.trim().toUpperCase(),
+    itens
+  }
+
+  const lista = S.g('clientes')
+  if (_editCliId) {
+    const idx = lista.findIndex(c => c.id == _editCliId)
+    if (idx !== -1) lista[idx] = cli
+  } else {
+    lista.push(cli)
+  }
+  S.s('clientes', lista)
+  _editCliId = null
+  document.getElementById('form-cli-title').textContent = '➕ Novo Cliente'
+  cancelarCli()
+  renderClientes()
+  popularSelects()
+}
+
+function cancelarCli() {
+  ['c-nome','c-doc','c-email','c-tel','c-end','c-num','c-cep','c-bairro','c-cidade','c-uf','c-banco','c-obsint'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = ''
+  })
+  document.getElementById('c-tipo').value = 'MEI'
+  document.getElementById('c-venc').value = ''
+  document.getElementById('c-itens-lista').innerHTML = ''
+  _editCliId = null
+  document.getElementById('form-cli-title').textContent = '➕ Novo Cliente'
+}
+
+function addItensCli(desc='', qtd=1, val='') {
+  const lista = document.getElementById('c-itens-lista')
+  const div = document.createElement('div')
+  div.className = 'item-row'
+  div.innerHTML = `
+    <input type="text" placeholder="Descrição" value="${desc}">
+    <input type="number" value="${qtd}" min="1">
+    <input type="text" placeholder="0,00" value="${val}" oninput="formatarMoeda(this)">
+    <button class="btn-rm" onclick="this.parentElement.remove()">✕</button>
+  `
+  lista.appendChild(div)
+}
+
+function editarCliente(id) {
+  const cli = S.g('clientes').find(c => c.id == id)
+  if (!cli) return
+  _editCliId = id
+  document.getElementById('c-nome').value = cli.nome||''
+  document.getElementById('c-doc').value = cli.doc||''
+  document.getElementById('c-tipo').value = cli.tipo||'MEI'
+  document.getElementById('c-email').value = cli.email||''
+  document.getElementById('c-tel').value = cli.tel||''
+  document.getElementById('c-end').value = cli.endLog||''
+  document.getElementById('c-num').value = cli.endNum||''
+  document.getElementById('c-cep').value = cli.cep||''
+  document.getElementById('c-bairro').value = cli.bairro||''
+  document.getElementById('c-cidade').value = cli.cidadeCli||''
+  document.getElementById('c-uf').value = cli.ufCli||''
+  document.getElementById('c-venc').value = cli.venc||''
+  document.getElementById('c-banco').value = cli.banco||''
+  document.getElementById('c-obsint').value = cli.obsInt||''
+  document.getElementById('c-itens-lista').innerHTML = ''
+  ;(cli.itens||[]).forEach(it => addItensCli(it.desc, it.qtd||1, fmtMoeda(parseFloat(it.val||0))))
+  document.getElementById('form-cli-title').textContent = '✏️ Editando: ' + cli.nome
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+function excluirCliente(id) {
+  if (!confirm('Excluir este cliente?')) return
+  S.s('clientes', S.g('clientes').filter(c => c.id != id))
+  renderClientes()
+  popularSelects()
+}
+
+function renderClientes() {
+  const lista = S.g('clientes')
+  const busca = document.getElementById('cli-busca')?.value.toLowerCase() || ''
+  const tipoF = document.getElementById('cli-tipo-f')?.value || ''
+
+  let filtrados = lista.filter(c => {
+    if (busca && !`${c.nome} ${c.doc} ${c.tipo}`.toLowerCase().includes(busca)) return false
+    if (tipoF && c.tipo !== tipoF) return false
+    return true
+  })
+
+  const el = document.getElementById('cli-lista')
+  if (!filtrados.length) { el.innerHTML = '<div class="tbl-empty">Nenhum cliente encontrado.</div>'; return }
+
+  const badgeMap = {
+    'MEI':'badge-blue','ME — Simples Nacional':'badge-green','EPP — Simples Nacional':'badge-green',
+    'Lucro Presumido':'badge-orange','Pessoa Física':'badge-gray'
+  }
+
+  el.innerHTML = `
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr>
+      <th>Nome / Razão Social</th><th>CPF/CNPJ</th><th>Tipo</th>
+      <th>Contato</th><th>Venc.</th><th>Itens</th><th style="width:110px">Ações</th>
+    </tr></thead>
+    <tbody>
+    ${filtrados.map(c => `
+      <tr>
+        <td><strong>${c.nome}</strong>${c.obsInt ? `<br><span style="font-size:.7rem;color:var(--ink2)">${c.obsInt}</span>` : ''}</td>
+        <td style="font-size:.78rem">${c.doc||'—'}</td>
+        <td><span class="badge ${badgeMap[c.tipo]||'badge-gray'}">${c.tipo||'—'}</span></td>
+        <td style="font-size:.75rem">${c.tel||''} ${c.email ? '<br>'+c.email : ''}</td>
+        <td style="font-size:.8rem">${c.venc ? 'Dia ' + c.venc : '—'}</td>
+        <td style="font-size:.75rem">${c.itens?.length ? c.itens.map(i => i.desc).join('<br>') : '—'}</td>
+        <td>
+          <button class="btn btn-o btn-xs" onclick="editarCliente(${c.id})">✏️</button>
+          <button class="btn btn-d btn-xs" onclick="excluirCliente(${c.id})">🗑️</button>
+        </td>
+      </tr>
+    `).join('')}
+    </tbody>
+  </table>
+  </div>`
+
+  // Chips de itens do catálogo para adicionar ao form
+  const catItens = S.g('itens')
+  const chipsEl = document.getElementById('chips-cli')
+  if (chipsEl) {
+    chipsEl.innerHTML = ''
+    catItens.forEach(it => {
+      const c = document.createElement('div')
+      c.className = 'chip'
+      c.textContent = it.desc + ' — R$ ' + fmtMoeda(parseFloat(it.val||0))
+      c.onclick = () => addItensCli(it.desc, 1, fmtMoeda(parseFloat(it.val||0)))
+      chipsEl.appendChild(c)
+    })
+  }
+}
+
+// ========= ITENS CATÁLOGO =========
+function salvarItemCat() {
+  const desc = document.getElementById('ic-desc').value.trim()
+  if (!desc) { alert('Informe a descrição.'); return }
+  const val = parseMoeda(document.getElementById('ic-val').value)
+  const itens = S.g('itens')
+  itens.push({ id: Date.now(), desc, val })
+  S.s('itens', itens)
+  document.getElementById('ic-desc').value = ''
+  document.getElementById('ic-val').value = ''
+  renderItensCat()
+  renderChipsItens()
+  renderSugestoesIRPF()
+}
+
+function renderItensCat() {
+  const busca = document.getElementById('itens-busca')?.value.toLowerCase() || ''
+  const itens = S.g('itens').filter(it => !busca || it.desc.toLowerCase().includes(busca))
+  const el = document.getElementById('itens-cat-lista')
+  if (!itens.length) { el.innerHTML = '<div class="tbl-empty">Nenhum item cadastrado.</div>'; return }
+  el.innerHTML = `
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Descrição</th><th style="width:160px">Valor Padrão</th><th style="width:80px">Ação</th></tr></thead>
+    <tbody>
+    ${itens.map(it => `
+      <tr>
+        <td>${it.desc}</td>
+        <td>R$ ${fmtMoeda(parseFloat(it.val||0))}</td>
+        <td><button class="btn btn-d btn-xs" onclick="excluirItem(${it.id})">🗑️</button></td>
+      </tr>
+    `).join('')}
+    </tbody>
+  </table>
+  </div>`
+}
+
+function excluirItem(id) {
+  if (!confirm('Remover este item?')) return
+  S.s('itens', S.g('itens').filter(it => it.id != id))
+  renderItensCat(); renderChipsItens(); renderSugestoesIRPF()
+}
+
+// ========= CONFIG =========
+function carregarConfig() {
+  const cfg = S.cfg()
+  const map = {
+    'cfg-nome':'nome','cfg-cnpj':'cnpj','cfg-crc':'crc','cfg-end':'end',
+    'cfg-tel':'tel','cfg-email':'email','cfg-cont':'cont','cfg-cpf-cont':'cpfCont',
+    'cfg-pix':'pix','cfg-banco':'banco','cfg-decl':'decl','cfg-cidade':'cidade'
+  }
+  Object.entries(map).forEach(([id, key]) => {
+    const el = document.getElementById(id)
+    if (el && cfg[key]) el.value = cfg[key]
+  })
+  if (cfg.pixTipo) document.getElementById('cfg-pix-t').value = cfg.pixTipo
+}
+
+function salvarConfig() {
+  const cfg = {
+    nome: document.getElementById('cfg-nome').value,
+    cnpj: document.getElementById('cfg-cnpj').value,
+    crc: document.getElementById('cfg-crc').value,
+    end: document.getElementById('cfg-end').value,
+    tel: document.getElementById('cfg-tel').value,
+    email: document.getElementById('cfg-email').value,
+    cont: document.getElementById('cfg-cont').value,
+    cpfCont: document.getElementById('cfg-cpf-cont').value,
+    pix: document.getElementById('cfg-pix').value,
+    pixTipo: document.getElementById('cfg-pix-t').value,
+    banco: document.getElementById('cfg-banco').value,
+    decl: document.getElementById('cfg-decl').value,
+    cidade: document.getElementById('cfg-cidade').value
+  }
+  S.saveCfg(cfg)
+  document.getElementById('sb-nome').textContent = cfg.nome || 'Escritório Contábil'
+  document.getElementById('sb-crc').textContent = cfg.crc || 'CRC/SP — 000000'
+  alert('✅ Configurações salvas!')
+}
+
+// ========= UTILS =========
+function fmtData(d) {
+  if (!d) return ''
+  const [a,m,dd] = d.split('-')
+  return `${dd}/${m}/${a}`
+}
+
+// ========= MÁSCARAS =========
+function mascaraDoc(el) {
+  let v = el.value.replace(/\D/g,'')
+  if (v.length <= 11) {
+    v = v.replace(/(\d{3})(\d)/,'$1.$2')
+     .replace(/(\d{3})(\d)/,'$1.$2')
+     .replace(/(\d{3})(\d{1,2})$/,'$1-$2')
+  } else {
+    v = v.replace(/(\d{2})(\d)/,'$1.$2')
+     .replace(/(\d{3})(\d)/,'$1.$2')
+     .replace(/(\d{3})(\d)/,'$1/$2')
+     .replace(/(\d{4})(\d{1,2})$/,'$1-$2')
+  }
+  el.value = v
+}
+
+function mascaraTel(el) {
+  let v = el.value.replace(/\D/g,'')
+  if (v.length <= 10) {
+    v = v.replace(/(\d{2})(\d)/,'($1) $2')
+    v = v.replace(/(\d{4})(\d{4})$/,'$1-$2')
+  } else {
+    v = v.replace(/(\d{2})(\d)/,'($1) $2')
+    v = v.replace(/(\d{5})(\d{4})$/,'$1-$2')
+  }
+  el.value = v
+}
+
+function mascaraTelFixo(el) {
+  let v = el.value.replace(/\D/g,'')
+  v = v.replace(/(\d{2})(\d)/,'($1) $2')
+  v = v.replace(/(\d{4})(\d{4})$/,'$1-$2')
+  el.value = v
+}
+
+function mascaraCEP(el) {
+  let v = (el.value || '').replace(/\D/g,'').slice(0,8)
+  if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5)
+  el.value = v
+}
+
+function mascaraRG(el) {
+  let v = el.value.replace(/[^0-9xX]/g,'').slice(0,9)
+  if (v.length > 2) v = v.slice(0,2) + '.' + v.slice(2)
+  if (v.length > 6) v = v.slice(0,6) + '.' + v.slice(6)
+  if (v.length > 10) v = v.slice(0,10) + '-' + v.slice(10)
+  el.value = v.toUpperCase()
+}
+
+function montarEnderecoCliente() {
+  const log = document.getElementById('c-end')?.value.trim() || ''
+  const num = document.getElementById('c-num')?.value.trim() || ''
+  const bairro = document.getElementById('c-bairro')?.value.trim() || ''
+  const cidade = document.getElementById('c-cidade')?.value.trim() || ''
+  const uf = (document.getElementById('c-uf')?.value.trim() || '').toUpperCase()
+  const cep = document.getElementById('c-cep')?.value.trim() || ''
+  const p1 = [log, num].filter(Boolean).join(', ')
+  const p2 = [bairro, [cidade, uf].filter(Boolean).join('/')].filter(Boolean).join(' - ')
+  return [p1, p2, cep].filter(Boolean).join(' — ')
+}
+
+async function buscarCEP() {
+  const cepEl = document.getElementById('c-cep')
+  if (!cepEl) return
+  const cep = (cepEl.value || '').replace(/\D/g,'')
+  if (cep.length !== 8) return
+  try {
+    const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    const data = await resp.json()
+    if (data.erro) return
+    if (!document.getElementById('c-end').value) document.getElementById('c-end').value = data.logradouro || ''
+    if (!document.getElementById('c-bairro').value) document.getElementById('c-bairro').value = data.bairro || ''
+    if (!document.getElementById('c-cidade').value) document.getElementById('c-cidade').value = data.localidade || ''
+    if (!document.getElementById('c-uf').value) document.getElementById('c-uf').value = data.uf || ''
+    const numEl = document.getElementById('c-num')
+    if (numEl) numEl.focus()
+  } catch (e) {
+    console.warn('CEP não localizado no momento.', e)
+  }
+}
+
+// Itens defaults se nunca inicializado
+if (!S.g('itens').length) {
+  S.s('itens', [
+    {id:1, desc:'Honorários contábeis mensais', val:350},
+    {id:2, desc:'Declaração IRPF', val:250},
+    {id:3, desc:'Abertura de empresa', val:800},
+    {id:4, desc:'Alvará / licença', val:300},
+    {id:5, desc:'Certidão negativa', val:80},
+    {id:6, desc:'Folha de pagamento', val:120},
+  ])
+  renderChipsItens()
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ========= SUPABASE — SETUP E SINCRONIZAÇÃO =========
+let sbClient = null
+let _syncTimer = null
+
+function carregarCredenciais() {
+  return {
+    url: localStorage.getItem('rcb_sb_url') || '',
+    key: localStorage.getItem('rcb_sb_key') || ''
+  }
+}
+
+function iniciarSupabase(url, key) {
+  try {
+    sbClient = supabase.createClient(url, key)
+    return true
+  } catch(e) {
+    console.error('Erro ao iniciar Supabase:', e)
+    return false
+  }
+}
+
+function salvarSetup() {
+  const url = (document.getElementById('setup-url').value || '').trim()
+  const key = (document.getElementById('setup-key').value || '').trim()
+  const msg = document.getElementById('setup-msg')
+  if (!url || !key) {
+    msg.className = 'setup-msg'; msg.textContent = '⚠️ Preencha os dois campos.'
+    return
+  }
+  if (!url.startsWith('https://')) {
+    msg.className = 'setup-msg'; msg.textContent = '⚠️ URL inválida. Deve começar com https://'
+    return
+  }
+  msg.className = 'setup-msg ok'; msg.textContent = '⏳ Verificando conexão...'
+  localStorage.setItem('rcb_sb_url', url)
+  localStorage.setItem('rcb_sb_key', key)
+  const ok = iniciarSupabase(url, key)
+  if (ok) {
+    msg.textContent = '✅ Conectado! Carregando o sistema...'
+    setTimeout(() => {
+      document.getElementById('tela-setup').classList.remove('ativo')
+      sincronizarTudo()
+      atualizarStatusDot()
+    }, 900)
+  } else {
+    msg.className = 'setup-msg'; msg.textContent = '❌ Erro ao conectar. Verifique os dados.'
+  }
+}
+
+function atualizarStatusDot(estado) {
+  const dot = document.getElementById('supabase-status-dot')
+  const txt = document.getElementById('supabase-status-text')
+  const sub = document.getElementById('supabase-status-subtext')
+  if (!dot) return
+  if (!sbClient) {
+    dot.className = 'status-dot status-error'
+    txt.textContent = 'Supabase: desconectado'
+    sub.textContent = 'Clique para configurar'
+    document.getElementById('supabase-status').style.cursor = 'pointer'
+    document.getElementById('supabase-status').onclick = () => document.getElementById('tela-setup').classList.add('ativo')
+    return
+  }
+  if (estado === 'ok') {
+    dot.className = 'status-dot status-ok'
+    txt.textContent = 'Supabase: sincronizado'
+    sub.textContent = new Date().toLocaleTimeString('pt-BR')
+  } else if (estado === 'erro') {
+    dot.className = 'status-dot status-error'
+    txt.textContent = 'Supabase: erro'
+    sub.textContent = 'Verifique a conexão'
+  } else {
+    dot.className = 'status-dot status-loading'
+    txt.textContent = 'Supabase: sincronizando...'
+    sub.textContent = 'Aguarde'
+  }
+}
+
+// Chaves que sincronizam com o Supabase
+const CHAVES_SYNC = ['clientes','recibos','recibos_ir','itens','cfg']
+
+async function sincronizarTudo() {
+  if (!sbClient) return
+  atualizarStatusDot('sync')
+  try {
+    // Carregar dados do Supabase
+    const { data, error } = await sbClient.from('dados_app').select('*')
+    if (error) throw error
+    if (data && data.length) {
+      data.forEach(row => {
+        if (CHAVES_SYNC.includes(row.chave)) {
+          localStorage.setItem(row.chave, JSON.stringify(row.dados))
+        }
+      })
+    }
+    // Recarregar telas
+    popularSelects()
+    renderChipsItens()
+    renderSugestoesIRPF()
+    const cfg = S.cfg()
+    if (cfg.nome) document.getElementById('sb-nome').textContent = cfg.nome
+    if (cfg.crc) document.getElementById('sb-crc').textContent = cfg.crc
+    atualizarStatusDot('ok')
+  } catch(e) {
+    console.error('Erro ao sincronizar:', e)
+    atualizarStatusDot('erro')
+  }
+}
+
+async function salvarRemoto(chave) {
+  if (!sbClient) return
+  atualizarStatusDot('sync')
+  clearTimeout(_syncTimer)
+  _syncTimer = setTimeout(async () => {
+    try {
+      const dados = JSON.parse(localStorage.getItem(chave) || 'null')
+      if (dados === null) return
+      const { error } = await sbClient.from('dados_app').upsert(
+        { chave, dados },
+        { onConflict: 'chave' }
+      )
+      if (error) throw error
+      atualizarStatusDot('ok')
+    } catch(e) {
+      console.error('Erro ao salvar remoto:', e)
+      atualizarStatusDot('erro')
+    }
+  }, 800)
+}
+
+// Interceptar o S.s para sincronizar automaticamente
+const _S_s_original = S.s.bind(S)
+S.s = (k, v) => {
+  _S_s_original(k, v)
+  if (CHAVES_SYNC.includes(k)) salvarRemoto(k)
+}
+const _S_saveCfg_original = S.saveCfg.bind(S)
+S.saveCfg = (v) => {
+  _S_saveCfg_original(v)
+  salvarRemoto('cfg')
+}
+
+// ========= INICIALIZAÇÃO DO SUPABASE NA CARGA DA PÁGINA =========
+;(function() {
+  const { url, key } = carregarCredenciais()
+  if (url && key) {
+    iniciarSupabase(url, key)
+    // Sincroniza após o app carregar
+    window.addEventListener('load', () => {
+      setTimeout(() => { sincronizarTudo(); atualizarStatusDot() }, 500)
+    })
+  } else {
+    // Primeira vez — mostra tela de setup
+    window.addEventListener('load', () => {
+      document.getElementById('tela-setup').classList.add('ativo')
+      atualizarStatusDot()
+    })
+  }
+})()
+</script>
+</body>
+</html>
