@@ -221,7 +221,7 @@ tr:hover td{background:#f8fafc}
 .picote{display:none!important}
 
 /* Cabeçalho do recibo */
-.rct-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5mm}
+.rct-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5mm}
 .rct-escritorio h2{font-family:'DM Serif Display',serif;font-size:15pt;color:#1B3A6B;margin-bottom:2px}
 .rct-escritorio p{font-size:9.5pt;color:#555;line-height:1.45}
 .rct-numero{text-align:right}
@@ -263,7 +263,7 @@ tr:hover td{background:#f8fafc}
 
 .rct-ass-row{display:flex;justify-content:space-between;margin-top:auto;gap:4mm;padding-bottom:1mm}
 .rct-ass-col{flex:1;display:flex;flex-direction:column;align-items:center}
-.rct-ass-linha{width:100%;border-top:1.5px solid #555;margin-top:14mm;margin-bottom:2px}
+.rct-ass-linha{width:100%;border-top:1.5px solid #555;margin-top:18mm;margin-bottom:2px}
 .rct-ass-nome{font-size:9pt;font-weight:700;color:#333;text-align:center;white-space:nowrap}
 .rct-ass-sub{font-size:7.5pt;color:#888;text-align:center}
 
@@ -275,7 +275,7 @@ tr:hover td{background:#f8fafc}
 .via-recibo-comum .rct-rodape-fixo{position:relative;left:auto;right:auto;bottom:auto;background:#fff;align-self:end}
 .via-recibo-comum .rct-rodape-fixo{padding-top:1.2mm;border-top:0;z-index:2}
 .via-recibo-comum .rct-corpo-ajustado{display:block}
-.via-recibo-comum .rct-head{margin-bottom:1mm}
+.via-recibo-comum .rct-head{margin-bottom:0mm}
 .via-recibo-comum .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
 .via-recibo-comum .rct-escritorio p{font-size:8.2pt;line-height:1.22}
 .via-recibo-comum .rct-numero .num{font-size:18pt}
@@ -300,7 +300,7 @@ tr:hover td{background:#f8fafc}
 .via-recibo-comum .rct-pix-box strong{font-size:8.6pt}
 .via-recibo-comum .rct-decl{font-size:8pt;line-height:1.18;padding-top:1mm}
 .via-recibo-comum .rct-ass-row{padding-bottom:0;margin-top:0}
-.via-recibo-comum .rct-ass-linha{margin-top:10mm}
+.via-recibo-comum .rct-ass-linha{margin-top:14mm}
 .via-recibo-comum .rct-ass-nome{font-size:8.2pt}
 .via-recibo-comum .rct-ass-sub{font-size:6.8pt}
 .via-recibo-comum .via-label{font-size:6.6pt;margin-top:.8mm;padding:2px 8px}
@@ -354,7 +354,7 @@ tr:hover td{background:#f8fafc}
 }
 .via-bloco-13cm.topo{ top:6.5mm; }
 .via-bloco-13cm.baixo{ top:150mm; }
-.via-bloco-13cm .rct-head{margin-bottom:1mm}
+.via-bloco-13cm .rct-head{margin-bottom:0mm}
 .via-bloco-13cm .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
 .via-bloco-13cm .rct-escritorio p{font-size:8.2pt;line-height:1.22}
 .via-bloco-13cm .rct-numero .num{font-size:18pt}
@@ -379,7 +379,7 @@ tr:hover td{background:#f8fafc}
 .via-bloco-13cm .rct-pix-box strong{font-size:8.2pt}
 .via-bloco-13cm .rct-decl{font-size:8.5pt;line-height:1.12;padding-top:.6mm;margin-bottom:0}
 .via-bloco-13cm .rct-ass-row{margin-top:9mm;gap:3mm;padding-bottom:0}
-.via-bloco-13cm .rct-ass-linha{margin-top:12mm}
+.via-bloco-13cm .rct-ass-linha{margin-top:16mm}
 .via-bloco-13cm .rct-ass-nome{font-size:7.8pt}
 .via-bloco-13cm .rct-ass-sub{font-size:6.2pt}
 .via-bloco-13cm .via-label{font-size:5.7pt;margin-top:0;padding:1px 5px}
@@ -1269,7 +1269,7 @@ function gerarReciboAvulso(imprimir) {
   if (venc) meta.push(`<div class="rct-ref-item"><div class="rl">Vencimento</div><div class="rv">${fmtData(venc)}</div></div>`)
   if (regime) meta.push(`<div class="rct-ref-item"><div class="rl">Regime</div><div class="rv">${regime}</div></div>`)
 
-  function htmlViaInterna(label) {
+  function htmlViaInterna(label, assinante, subAssinante) {
     return `
       <div class="rct-head">
         <div class="rct-escritorio">
@@ -1308,16 +1308,20 @@ function gerarReciboAvulso(imprimir) {
       ${cfg.pix ? `<div class="rct-pix-box"><p>🔑 <strong>Pix ${cfg.pixTipo || ''}: ${cfg.pix}</strong><br>${cfg.banco ? 'Banco: ' + cfg.banco : ''}</p></div>` : ''}
       <div class="rct-decl">${decl}</div>
       <div class="rct-ass-row">
-        <div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div><div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div></div>
+        <div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${assinante}</div><div class="rct-ass-sub">${subAssinante}</div></div>
         <div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${cfg.cidade || ''}, ______ de ____________________ de 20______</div></div>
       </div>
       <div class="via-label">${label}</div>`
   }
 
+  const nomeCliente = document.getElementById('r-nome').value.trim() || 'Cliente'
+  const nomeEscritorio = cfg.cont || cfg.nome || 'Responsável'
+  const subEscritorio = `Contabilidade${cfg.crc ? ' — ' + cfg.crc : ''}`
+
   document.getElementById('print-recibo').innerHTML = `
     <div class="recibo-folha-13cm">
-      <div class="via-bloco-13cm topo">${htmlViaInterna('VIA IDÊNTICA')}</div>
-      <div class="via-bloco-13cm baixo">${htmlViaInterna('VIA IDÊNTICA')}</div>
+      <div class="via-bloco-13cm topo">${htmlViaInterna('1ª VIA — ESCRITÓRIO', nomeCliente, 'Assinatura do Cliente')}</div>
+      <div class="via-bloco-13cm baixo">${htmlViaInterna('2ª VIA — CLIENTE', nomeEscritorio, subEscritorio)}</div>
     </div>`
 
   if (imprimir) setTimeout(() => window.print(), 100)
@@ -1454,7 +1458,7 @@ function gerarIRPF(imprimir) {
   const valorExtenso = valorPorExtenso(valor)
   const decl = `Declaro ter recebido de ${nome}${cpf ? ' (CPF: ' + cpf + ')' : ''}, a importância de R$ ${fmtMoeda(valor)} (${valorExtenso}), referente a ${tipo}, ficando quitado o presente recibo.`
 
-  function htmlViaIR(label) {
+  function htmlViaIR(label, assinante, subAssinante) {
     return `
 <div class="via-bloco">
   <div class="rct-head">
@@ -1506,8 +1510,8 @@ function gerarIRPF(imprimir) {
   <div class="rct-ass-row">
     <div class="rct-ass-col">
       <div class="rct-ass-linha"></div>
-      <div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div>
-      <div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div>
+      <div class="rct-ass-nome">${assinante}</div>
+      <div class="rct-ass-sub">${subAssinante}</div>
     </div>
     <div class="rct-ass-col" style="justify-content:flex-end">
       <div class="rct-ass-nome">${cidade || cfg.cidade || ''}, ______ de ____________________ de 20______</div>
@@ -1517,10 +1521,14 @@ function gerarIRPF(imprimir) {
 </div>`
   }
 
+  const nomeClienteIR = document.getElementById('ir-nome').value.trim() || 'Cliente'
+  const nomeEscritorioIR = cfg.cont || cfg.nome || 'Responsável'
+  const subEscritorioIR = `Contabilidade${cfg.crc ? ' — ' + cfg.crc : ''}`
+
   document.getElementById('print-recibo').innerHTML = `
   <div class="recibo-folha">
-    ${htmlViaIR('VIA IDÊNTICA')}
-    ${htmlViaIR('VIA IDÊNTICA')}
+    ${htmlViaIR('1ª VIA — ESCRITÓRIO', nomeClienteIR, 'Assinatura do Cliente')}
+    ${htmlViaIR('2ª VIA — CLIENTE', nomeEscritorioIR, subEscritorioIR)}
   </div>`
 
   if (imprimir) {
@@ -1743,7 +1751,7 @@ function reimprimirIRPF(id) {
   const r = S.g('recibos_ir').find(r => r.id == id)
   if (!r) return
   const cfg = S.cfg()
-  function htmlViaIR(label) {
+  function htmlViaIR(label, assinante, subAssinante) {
     return `
 <div class="via-bloco">
   <div class="rct-head">
@@ -1770,11 +1778,14 @@ function reimprimirIRPF(id) {
   <table class="rct-itens" style="margin-bottom:4mm"><thead><tr><th>Descrição</th><th style="width:24%;text-align:right">Valor R$</th></tr></thead><tbody><tr><td>${r.tipo || '—'}</td><td style="text-align:right;font-weight:700;color:#1B3A6B">R$ ${fmtMoeda(r.valor||0)}</td></tr></tbody></table>
   <div class="rct-total-row"><div class="rct-total-box"><div class="tl">Total</div><div class="tv">R$ ${fmtMoeda(r.valor||0)}</div></div></div>
   <div class="rct-decl">Declaro ter recebido de ${r.nome}${r.cpf ? ' (CPF/CNPJ: ' + r.cpf + ')' : ''}, a importância de R$ ${fmtMoeda(r.valor||0)}, referente a ${r.tipo || 'serviços prestados'}, ficando quitado o presente recibo.</div>
-  <div class="rct-ass-row"><div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${cfg.cont || cfg.nome || 'Responsável'}</div><div class="rct-ass-sub">Responsável${cfg.crc ? ' — ' + cfg.crc : ''}</div></div><div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${r.cidade || cfg.cidade || ''}, ______ de ____________________ de 20______</div></div></div>
+  <div class="rct-ass-row"><div class="rct-ass-col"><div class="rct-ass-linha"></div><div class="rct-ass-nome">${assinante}</div><div class="rct-ass-sub">${subAssinante}</div></div><div class="rct-ass-col" style="justify-content:flex-end"><div class="rct-ass-nome">${r.cidade || cfg.cidade || ''}, ______ de ____________________ de 20______</div></div></div>
   <div class="via-label">${label}</div>
 </div>`
   }
-  document.getElementById('print-recibo').innerHTML = `<div class="recibo-folha">${htmlViaIR('VIA IDÊNTICA')}${htmlViaIR('VIA IDÊNTICA')}</div>`
+  const nomeClienteRI = r.nome || 'Cliente'
+  const nomeEscritorioRI = cfg.cont || cfg.nome || 'Responsável'
+  const subEscritorioRI = `Contabilidade${cfg.crc ? ' — ' + cfg.crc : ''}`
+  document.getElementById('print-recibo').innerHTML = `<div class="recibo-folha">${htmlViaIR('1ª VIA — ESCRITÓRIO', nomeClienteRI, 'Assinatura do Cliente')}${htmlViaIR('2ª VIA — CLIENTE', nomeEscritorioRI, subEscritorioRI)}</div>`
   setTimeout(() => window.print(), 100)
 }
 
