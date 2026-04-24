@@ -276,11 +276,11 @@ tr:hover td{background:#f8fafc}
 .via-recibo-comum .rct-rodape-fixo{padding-top:1.2mm;border-top:0;z-index:2}
 .via-recibo-comum .rct-corpo-ajustado{display:block}
 .via-recibo-comum .rct-head{margin-bottom:0mm}
-.via-recibo-comum .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
-.via-recibo-comum .rct-escritorio p{font-size:8.2pt;line-height:1.22}
+.via-recibo-comum .rct-escritorio h2{font-size:12.5pt;margin-bottom:0px}
+.via-recibo-comum .rct-escritorio p{font-size:8pt;line-height:1.18}
 .via-recibo-comum .rct-numero .num{font-size:18pt}
 .via-recibo-comum .rct-numero .num-label{font-size:7.8pt}
-.via-recibo-comum .rct-divider{margin-bottom:2mm}
+.via-recibo-comum .rct-divider{margin-bottom:1mm}
 .via-recibo-comum .rct-title{font-size:10.8pt;margin-bottom:1.8mm}
 .via-recibo-comum .rct-cli-box{padding:3px 8px;margin-bottom:2mm}
 .via-recibo-comum .rct-cli-box p{font-size:8.8pt;line-height:1.24}
@@ -298,9 +298,9 @@ tr:hover td{background:#f8fafc}
 .via-recibo-comum .rct-pix-box{padding:2px 7px;margin-bottom:1.2mm;gap:5mm}
 .via-recibo-comum .rct-pix-box p{font-size:8.2pt;line-height:1.2}
 .via-recibo-comum .rct-pix-box strong{font-size:8.6pt}
-.via-recibo-comum .rct-decl{font-size:8pt;line-height:1.18;padding-top:1mm}
+.via-recibo-comum .rct-decl{font-size:9pt;line-height:1.18;padding-top:1mm}
 .via-recibo-comum .rct-ass-row{padding-bottom:0;margin-top:0}
-.via-recibo-comum .rct-ass-linha{margin-top:14mm}
+.via-recibo-comum .rct-ass-linha{margin-top:10mm}
 .via-recibo-comum .rct-ass-nome{font-size:8.2pt}
 .via-recibo-comum .rct-ass-sub{font-size:6.8pt}
 .via-recibo-comum .via-label{font-size:6.6pt;margin-top:.8mm;padding:2px 8px}
@@ -355,11 +355,11 @@ tr:hover td{background:#f8fafc}
 .via-bloco-13cm.topo{ top:6.5mm; }
 .via-bloco-13cm.baixo{ top:150mm; }
 .via-bloco-13cm .rct-head{margin-bottom:0mm}
-.via-bloco-13cm .rct-escritorio h2{font-size:13pt;margin-bottom:1px}
-.via-bloco-13cm .rct-escritorio p{font-size:8.2pt;line-height:1.22}
+.via-bloco-13cm .rct-escritorio h2{font-size:12.5pt;margin-bottom:0px}
+.via-bloco-13cm .rct-escritorio p{font-size:8pt;line-height:1.18}
 .via-bloco-13cm .rct-numero .num{font-size:18pt}
 .via-bloco-13cm .rct-numero .num-label{font-size:7.8pt}
-.via-bloco-13cm .rct-divider{margin-bottom:2mm}
+.via-bloco-13cm .rct-divider{margin-bottom:1mm}
 .via-bloco-13cm .rct-title{font-size:10.8pt;margin-bottom:1.8mm}
 .via-bloco-13cm .rct-cli-box{padding:3px 8px;margin-bottom:1.8mm}
 .via-bloco-13cm .rct-cli-box p{font-size:8.8pt;line-height:1.22}
@@ -377,9 +377,9 @@ tr:hover td{background:#f8fafc}
 .via-bloco-13cm .rct-pix-box{padding:2px 7px;margin-bottom:.6mm;gap:5mm}
 .via-bloco-13cm .rct-pix-box p{font-size:7.8pt;line-height:1.08}
 .via-bloco-13cm .rct-pix-box strong{font-size:8.2pt}
-.via-bloco-13cm .rct-decl{font-size:8.5pt;line-height:1.12;padding-top:.6mm;margin-bottom:0}
+.via-bloco-13cm .rct-decl{font-size:9pt;line-height:1.18;padding-top:.6mm;margin-bottom:0}
 .via-bloco-13cm .rct-ass-row{margin-top:9mm;gap:3mm;padding-bottom:0}
-.via-bloco-13cm .rct-ass-linha{margin-top:16mm}
+.via-bloco-13cm .rct-ass-linha{margin-top:12mm}
 .via-bloco-13cm .rct-ass-nome{font-size:7.8pt}
 .via-bloco-13cm .rct-ass-sub{font-size:6.2pt}
 .via-bloco-13cm .via-label{font-size:5.7pt;margin-top:0;padding:1px 5px}
@@ -1314,7 +1314,7 @@ function gerarReciboAvulso(imprimir) {
       <div class="via-label">${label}</div>`
   }
 
-  const nomeCliente = document.getElementById('r-nome').value.trim() || 'Cliente'
+  const nomeCliente = document.getElementById('r-cli-nome').value.trim() || cli?.nome || 'Cliente'
   const nomeEscritorio = cfg.cont || cfg.nome || 'Responsável'
   const subEscritorio = `Contabilidade${cfg.crc ? ' — ' + cfg.crc : ''}`
 
@@ -2348,7 +2348,13 @@ async function sincronizarTudo() {
     if (data && data.length) {
       data.forEach(row => {
         if (CHAVES_SYNC.includes(row.chave)) {
-          localStorage.setItem(row.chave, JSON.stringify(row.dados))
+          // Não sobrescrever com array vazio se já tem dados locais
+          const local = localStorage.getItem(row.chave)
+          const dadosRemoto = row.dados
+          const vazio = Array.isArray(dadosRemoto) && dadosRemoto.length === 0
+          if (!vazio || !local) {
+            localStorage.setItem(row.chave, JSON.stringify(dadosRemoto))
+          }
         }
       })
     }
