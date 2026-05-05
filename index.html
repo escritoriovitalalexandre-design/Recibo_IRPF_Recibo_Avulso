@@ -510,7 +510,7 @@ tr:hover td{background:#f8fafc}
 <div id="tela-setup">
   <div class="setup-box">
     <div class="setup-logo">⚙️ Configurar banco de dados</div>
-    <div class="setup-sub">Para usar o sistema online, informe as credenciais do seu projeto Supabase. Isso é feito <strong>uma única vez por computador</strong>.</div>
+    <div class="setup-sub">Para usar o sistema online, informe as credenciais do seu projeto Supabase. Isso pode ser feito na primeira configuração ou quando você quiser trocar/reconfigurar o banco.</div>
     <div class="setup-step">
       <div class="setup-num">1</div>
       <div class="setup-step-text">Acesse <a href="https://supabase.com" target="_blank">supabase.com</a> e faça login no seu projeto.</div>
@@ -937,6 +937,29 @@ tr:hover td{background:#f8fafc}
     </div>
     <div class="field" style="margin-top:8px"><label>Cidade (para data)</label><input type="text" id="cfg-cidade" placeholder="Ex: Itirapina/SP"></div>
   </div>
+
+  <div class="card">
+    <div class="card-title">🗄️ Banco de Dados Supabase <span>reconfiguração</span></div>
+    <div class="aviso" style="background:#eff6ff;border-color:#93c5fd;color:#1e40af;margin-bottom:14px">
+      Use esta opção quando trocar de projeto, atualizar o banco de dados ou precisar inserir novamente a <strong>Project URL</strong> e a <strong>Anon Key</strong> do Supabase.
+    </div>
+    <div class="fg fg2">
+      <div class="field">
+        <label>Status atual</label>
+        <input type="text" id="cfg-sb-status" value="Verifique a bolinha na lateral esquerda" readonly style="background:#f8fafc;text-transform:none">
+      </div>
+      <div class="field">
+        <label>Project URL salva</label>
+        <input type="text" id="cfg-sb-url" readonly style="background:#f8fafc;text-transform:none" placeholder="Nenhuma URL configurada">
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:6px">
+      <button class="btn btn-s" onclick="abrirReconfigurarSupabase()">🔁 Reconfigurar Supabase</button>
+      <button class="btn btn-o" onclick="testarSupabaseManual()">🔎 Testar conexão</button>
+      <button class="btn btn-d" onclick="limparCredenciaisSupabase()">🗑️ Limpar credenciais</button>
+    </div>
+  </div>
+
   <div class="btn-row">
     <button class="btn btn-p" onclick="salvarConfig()">💾 Salvar configurações</button>
   </div>
@@ -2130,6 +2153,7 @@ function carregarConfig() {
     if (el && cfg[key]) el.value = cfg[key]
   })
   if (cfg.pixTipo) document.getElementById('cfg-pix-t').value = cfg.pixTipo
+  atualizarCamposSupabaseConfig()
 }
 
 function salvarConfig() {
@@ -2301,10 +2325,56 @@ function salvarSetup() {
       document.getElementById('tela-setup').classList.remove('ativo')
       sincronizarTudo()
       atualizarStatusDot()
+      atualizarCamposSupabaseConfig()
     }, 900)
   } else {
     msg.className = 'setup-msg'; msg.textContent = '❌ Erro ao conectar. Verifique os dados.'
   }
+}
+
+function abrirReconfigurarSupabase() {
+  const { url, key } = carregarCredenciais()
+  const urlEl = document.getElementById('setup-url')
+  const keyEl = document.getElementById('setup-key')
+  const msg = document.getElementById('setup-msg')
+  if (urlEl) urlEl.value = url || ''
+  if (keyEl) keyEl.value = key || ''
+  if (msg) { msg.className = 'setup-msg'; msg.textContent = '' }
+  document.getElementById('tela-setup').classList.add('ativo')
+}
+
+async function testarSupabaseManual() {
+  const { url, key } = carregarCredenciais()
+  if (!url || !key) {
+    alert('⚠️ Ainda não existe Project URL e Anon Key salvas. Clique em Reconfigurar Supabase para informar os dados.')
+    abrirReconfigurarSupabase()
+    return
+  }
+  if (!sbClient) iniciarSupabase(url, key)
+  await sincronizarTudo()
+  atualizarCamposSupabaseConfig()
+}
+
+function limparCredenciaisSupabase() {
+  if (!confirm('Deseja apagar a Project URL e a Anon Key salvas neste computador? Os dados locais do sistema não serão apagados.')) return
+  localStorage.removeItem('rcb_sb_url')
+  localStorage.removeItem('rcb_sb_key')
+  sbClient = null
+  const urlEl = document.getElementById('setup-url')
+  const keyEl = document.getElementById('setup-key')
+  if (urlEl) urlEl.value = ''
+  if (keyEl) keyEl.value = ''
+  atualizarStatusDot('erro')
+  atualizarCamposSupabaseConfig()
+  alert('✅ Credenciais removidas. Para conectar novamente, clique em Reconfigurar Supabase.')
+}
+
+function atualizarCamposSupabaseConfig() {
+  const { url } = carregarCredenciais()
+  const urlCfg = document.getElementById('cfg-sb-url')
+  const stCfg = document.getElementById('cfg-sb-status')
+  if (urlCfg) urlCfg.value = url || ''
+  if (stCfg) stCfg.value = sbClient ? 'Supabase configurado neste computador' : 'Supabase não configurado'
 }
 
 function atualizarStatusDot(estado) {
@@ -2317,7 +2387,7 @@ function atualizarStatusDot(estado) {
     txt.textContent = 'Supabase: desconectado'
     sub.textContent = 'Clique para configurar'
     document.getElementById('supabase-status').style.cursor = 'pointer'
-    document.getElementById('supabase-status').onclick = () => document.getElementById('tela-setup').classList.add('ativo')
+    document.getElementById('supabase-status').onclick = () => abrirReconfigurarSupabase()
     return
   }
   if (estado === 'ok') {
